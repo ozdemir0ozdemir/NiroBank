@@ -15,6 +15,7 @@ import java.security.spec.KeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,13 +43,13 @@ public class BearerTokenService {
 
         String token = Jwts
                 .builder()
-                .setSubject("User")
-                .setClaims(Map.of("scope", "jwt:read"))
+                .setId(UUID.randomUUID().toString())
                 .setIssuer("NiroBank-AuthS")
                 .setAudience("NiroBank-Api")
                 .setIssuedAt(Date.from(issuedAt))
                 .setExpiration(Date.from(expiredAt))
-                .setId(UUID.randomUUID().toString())
+                .setSubject("USER")
+                .addClaims(Map.of("authorities", List.of("SCOPE_user:read", "SCOPE_user:write")))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
 
