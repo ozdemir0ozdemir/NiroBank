@@ -1,8 +1,10 @@
 package ozdemir0ozdemir.nirobank.authserver.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.nirobank.authserver.configuration.BearerTokenConfiguration;
 
@@ -20,13 +22,16 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-public class BearerTokenService {
+public final class BearerTokenService {
 
     private final BearerTokenConfiguration configuration;
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
 
-    public BearerTokenService(BearerTokenConfiguration configuration) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public BearerTokenService(@NonNull BearerTokenConfiguration configuration) throws
+            NoSuchAlgorithmException,
+            InvalidKeySpecException {
+
         this.configuration = configuration;
 
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -36,33 +41,38 @@ public class BearerTokenService {
         publicKey = keyFactory.generatePublic(publicSpec);
     }
 
-    public String generateToken() {
-
-        Instant issuedAt = Instant.now();
-        Instant expiredAt = issuedAt.plus(configuration.getExpiredAtAmount(), configuration.getExpiredAtUnit());
-
-        String token = Jwts
-                .builder()
-                .setId(UUID.randomUUID().toString())
-                .setIssuer("NiroBank-AuthS")
-                .setAudience("NiroBank-Api")
-                .setIssuedAt(Date.from(issuedAt))
-                .setExpiration(Date.from(expiredAt))
-                .setSubject("USER")
-                .addClaims(Map.of("authorities", List.of("SCOPE_user:read", "SCOPE_user:write")))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
-                .compact();
-
-        String issuer = Jwts.parserBuilder()
+    public Claims getClaimsFrom(@NonNull final String token) {
+        return Jwts
+                .parserBuilder()
                 .setSigningKey(publicKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody().toString();
-
-        System.out.println("Verified with issuer: " + issuer);
-
-        return token;
+                .getBody();
     }
 
+    public String generateBearerTokenFor(@NonNull final String username,
+                                         @NonNull final List<String> authorities) {
 
+        Instant issuedAt = Instant.now();
+        return generateBearerToken(username, authorities, issuedAt);
+    }
+
+    String generateBearerToken(@NonNull final String username,
+                               @NonNull final List<String> authorities,
+                               @NonNull final Instant issuedAt) {
+
+        Instant expiredAt = issuedAt.plus(configuration.getExpiredAtAmount(), configuration.getExpiredAtUnit());
+
+        return Jwts
+                .builder()
+                .setId(UUID.randomUUID().toString())
+                .setIssuer(this.configuration.getIssuer())
+                .setAudience(this.configuration.getAudience())
+                .setIssuedAt(Date.from(issuedAt))
+                .setExpiration(Date.from(expiredAt))
+                .setSubject(username)
+                .addClaims(Map.of("authorities", authorities))
+                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .compact();
+    }
 }

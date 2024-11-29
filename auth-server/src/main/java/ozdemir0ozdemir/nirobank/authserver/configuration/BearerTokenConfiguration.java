@@ -27,6 +27,8 @@ public final class BearerTokenConfiguration {
     private X509EncodedKeySpec publicKeySpec;
     private ChronoUnit expiredAtUnit;
     private Long expiredAtAmount;
+    private String issuer;
+    private String audience;
 
     void setPublicKey(@NonNull Resource resource) {
         try {
