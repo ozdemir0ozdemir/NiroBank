@@ -1,6 +1,5 @@
 package ozdemir0ozdemir.nirobank.authserver.configuration;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +26,8 @@ public final class BearerTokenConfiguration {
     private X509EncodedKeySpec publicKeySpec;
     private ChronoUnit expiredAtUnit;
     private Long expiredAtAmount;
+    private ChronoUnit refreshExpiredAtUnit;
+    private Long refreshExpiredAtAmount;
     private String issuer;
     private String audience;
 

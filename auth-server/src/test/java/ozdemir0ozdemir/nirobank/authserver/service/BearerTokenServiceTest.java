@@ -94,7 +94,8 @@ class BearerTokenServiceTest {
         String token = bearerTokenService.generateBearerToken(
                 "USER",
                 List.of("USER", "ADMIN"),
-                Instant.now().minus(35L, ChronoUnit.MINUTES));
+                Instant.now().minus(35L, ChronoUnit.MINUTES),
+                false);
 
         assertThatThrownBy(() -> bearerTokenService.getClaimsFrom(token))
                 .isInstanceOf(ExpiredJwtException.class);
@@ -142,5 +143,23 @@ class BearerTokenServiceTest {
 
         assertThatThrownBy(() -> bearerTokenService.getClaimsFrom(null))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldReturnRefreshScopeAuthorityClaim() throws Exception {
+
+        String token = bearerTokenService.generateRefreshTokenFor("USER");
+        assertThat(token).isNotNull().isNotBlank();
+
+        Claims claims = bearerTokenService.getClaimsFrom(token);
+        assertThat(claims).isNotNull();
+
+        Object rawAuthorities = claims.get("authorities");
+        assertThat(rawAuthorities).isInstanceOf(List.class);
+
+        @SuppressWarnings("unchecked")
+        List<String> authorities = (List<String>) rawAuthorities;
+        assertThat(authorities).contains("SCOPE_token:refresh");
+
     }
 }
