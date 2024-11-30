@@ -26,6 +26,22 @@ public final class TokenRepository {
         return Optional.empty();
     }
 
+    public Optional<Token> findTokenByUsernameAndRefreshToken(String username, String refreshToken) {
+
+        Optional<TokenCache> optionalTokenCache = tokenList.stream()
+                .filter(cache -> cache.username().equals(username))
+                .filter(cache -> cache.refreshToken().equals(refreshToken))
+                .findFirst();
+
+        if(optionalTokenCache.isPresent()){
+            TokenCache cache = optionalTokenCache.get();
+            return Optional.of(new Token(cache.accessToken(), cache.refreshToken()));
+        }
+
+        return Optional.empty();
+    }
+
+
     public void revokeToken(String username, Token token) {
         this.tokenList.remove(new TokenCache(username, token.accessToken(), token.refreshToken()));
     }

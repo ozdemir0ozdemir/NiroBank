@@ -1,6 +1,7 @@
 package ozdemir0ozdemir.nirobank.authserver.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.lang.NonNull;
@@ -48,12 +49,19 @@ public final class JwtService {
                 .getBody();
     }
 
-    public void verifyTokenFor(@NonNull final String token) {
-        Jwts
-                .parserBuilder()
-                .setSigningKey(publicKey)
-                .build()
-                .parseClaimsJws(token);
+
+    public boolean isTokenExpired(@NonNull final String token) {
+        try {
+            Jwts
+                    .parserBuilder()
+                    .setSigningKey(publicKey)
+                    .build()
+                    .parseClaimsJws(token);
+            return false;
+        }
+        catch (ExpiredJwtException _) {
+            return true;
+        }
     }
 
     public String generateBearerTokenFor(@NonNull final String username,

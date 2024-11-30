@@ -166,4 +166,23 @@ class JwtServiceTest {
         assertThat(authorities).contains("SCOPE_token:refresh");
 
     }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenCheckingTokensExpireStatus() throws Exception {
+        assertThatThrownBy(() -> jwtService.isTokenExpired(""))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldReturnTrueWhenCheckingTokensExpireStatus() throws Exception {
+        String token = jwtService
+                .generateBearerToken(
+                        "USER",
+                        List.of("USER", "ADMIN"),
+                        Instant.now().minus(31L, ChronoUnit.MINUTES),
+                        false);
+
+        assertThat(jwtService.isTokenExpired(token))
+                .isTrue();
+    }
 }
