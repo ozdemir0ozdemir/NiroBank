@@ -8,6 +8,7 @@ build/
 # RSA KEYS
 **/*.pem
 
+containers/auth-cache
 ### STS ###
 .apt_generated
 .classpath

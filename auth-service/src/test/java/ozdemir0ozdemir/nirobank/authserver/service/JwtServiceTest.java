@@ -23,9 +23,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-class BearerTokenServiceTest {
+class JwtServiceTest {
 
-    private static BearerTokenService bearerTokenService;
+    private static JwtService jwtService;
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -47,20 +47,24 @@ class BearerTokenServiceTest {
                 .thenReturn(30L);
         when(configuration.getExpiredAtUnit())
                 .thenReturn(ChronoUnit.MINUTES);
+        when(configuration.getRefreshExpiredAtAmount())
+                .thenReturn(30L);
+        when(configuration.getRefreshExpiredAtUnit())
+                .thenReturn(ChronoUnit.DAYS);
 
-        bearerTokenService = new BearerTokenService(configuration);
+        jwtService = new JwtService(configuration);
     }
 
 
     @Test
     void shouldGenerateValidBearerTokenWithCorrectClaims() throws Exception {
 
-        String token = bearerTokenService
+        String token = jwtService
                 .generateBearerTokenFor("USER", List.of("USER", "ADMIN"));
 
         assertThat(token).isNotNull();
 
-        Claims claims = bearerTokenService
+        Claims claims = jwtService
                 .getClaimsFrom(token);
 
         assertThat(claims.getAudience()).isEqualTo("NiroBank-Api");
@@ -91,19 +95,19 @@ class BearerTokenServiceTest {
     @Test
     void shouldThrowExpiredJwtException() throws Exception {
 
-        String token = bearerTokenService.generateBearerToken(
+        String token = jwtService.generateBearerToken(
                 "USER",
                 List.of("USER", "ADMIN"),
                 Instant.now().minus(35L, ChronoUnit.MINUTES),
                 false);
 
-        assertThatThrownBy(() -> bearerTokenService.getClaimsFrom(token))
+        assertThatThrownBy(() -> jwtService.getClaimsFrom(token))
                 .isInstanceOf(ExpiredJwtException.class);
     }
 
     @Test
     void shouldThrowMalformedJwtException() throws Exception {
-        assertThatThrownBy(() -> bearerTokenService.getClaimsFrom("malformed.jwt.token"))
+        assertThatThrownBy(() -> jwtService.getClaimsFrom("malformed.jwt.token"))
                 .isInstanceOf(MalformedJwtException.class);
     }
 
@@ -129,29 +133,29 @@ class BearerTokenServiceTest {
                 .signWith(keyPair.getPrivate(), SignatureAlgorithm.RS256)
                 .compact();
 
-        assertThatThrownBy(() -> bearerTokenService.getClaimsFrom(token))
+        assertThatThrownBy(() -> jwtService.getClaimsFrom(token))
                 .isInstanceOf(SignatureException.class);
     }
 
     @Test
     void shouldThrowIllegalArgumentException() throws Exception {
-        assertThatThrownBy(() -> bearerTokenService.getClaimsFrom(""))
+        assertThatThrownBy(() -> jwtService.getClaimsFrom(""))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> bearerTokenService.getClaimsFrom("         "))
+        assertThatThrownBy(() -> jwtService.getClaimsFrom("         "))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> bearerTokenService.getClaimsFrom(null))
+        assertThatThrownBy(() -> jwtService.getClaimsFrom(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void shouldReturnRefreshScopeAuthorityClaim() throws Exception {
 
-        String token = bearerTokenService.generateRefreshTokenFor("USER");
+        String token = jwtService.generateRefreshTokenFor("USER");
         assertThat(token).isNotNull().isNotBlank();
 
-        Claims claims = bearerTokenService.getClaimsFrom(token);
+        Claims claims = jwtService.getClaimsFrom(token);
         assertThat(claims).isNotNull();
 
         Object rawAuthorities = claims.get("authorities");

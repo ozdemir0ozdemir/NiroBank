@@ -1,0 +1,14 @@
+version: 3
+
+tasks:
+  start-infra:
+    cmd: docker compose -f ./containers/AuthServer.yml up -d
+
+  stop-infra:
+    cmd: docker compose -f ./containers/AuthServer.yml down
+
+  restart-infra:
+    cmds:
+      - task: stop-infra
+      - cmd: timeout 1
+      - task: start-infra

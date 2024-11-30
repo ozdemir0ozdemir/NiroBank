@@ -3,7 +3,6 @@ package ozdemir0ozdemir.nirobank.authserver.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.nirobank.authserver.configuration.BearerTokenConfiguration;
@@ -15,20 +14,19 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
-public final class BearerTokenService {
+public final class JwtService {
 
     private final BearerTokenConfiguration configuration;
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
 
-    public BearerTokenService(@NonNull BearerTokenConfiguration configuration) throws
+    public JwtService(@NonNull BearerTokenConfiguration configuration) throws
             NoSuchAlgorithmException,
             InvalidKeySpecException {
 
@@ -48,6 +46,14 @@ public final class BearerTokenService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public void verifyTokenFor(@NonNull final String token) {
+        Jwts
+                .parserBuilder()
+                .setSigningKey(publicKey)
+                .build()
+                .parseClaimsJws(token);
     }
 
     public String generateBearerTokenFor(@NonNull final String username,
