@@ -1,10 +1,10 @@
-package ozdemir0zdemir.userservice;
+package ozdemir0ozdemir.userservice;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import ozdemir0zdemir.userservice.service.UserService;
+import ozdemir0ozdemir.userservice.service.UserService;
 
 @SpringBootApplication
 public class UserServiceApplication {

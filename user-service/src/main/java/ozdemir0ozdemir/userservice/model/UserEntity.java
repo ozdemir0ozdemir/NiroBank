@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.nirobank.authserver.client;
+package ozdemir0ozdemir.userservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class User {
+public class UserEntity {
 
     private Long id;
     private String username;
@@ -29,7 +29,7 @@ public class User {
             return true;
         }
 
-        if(other instanceof User otherUser){
+        if(other instanceof UserEntity otherUser){
             return this.id.equals(otherUser.id) &&
                     this.username.equals(otherUser.username) &&
                     this.authorities.containsAll(otherUser.authorities);

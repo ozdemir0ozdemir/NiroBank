@@ -1,11 +1,11 @@
-package ozdemir0zdemir.userservice.controller;
+package ozdemir0ozdemir.userservice.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ozdemir0zdemir.userservice.model.User;
-import ozdemir0zdemir.userservice.request.SaveUser;
-import ozdemir0zdemir.userservice.service.UserService;
+import ozdemir0ozdemir.common.User;
+import ozdemir0ozdemir.userservice.request.SaveUser;
+import ozdemir0ozdemir.userservice.service.UserService;
 
 import java.net.URI;
 

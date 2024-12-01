@@ -2,6 +2,8 @@ package ozdemir0ozdemir.nirobank.authserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ozdemir0ozdemir.common.User;
+import ozdemir0ozdemir.nirobank.authserver.client.UserClient;
 import ozdemir0ozdemir.nirobank.authserver.exception.TokenGenerationException;
 import ozdemir0ozdemir.nirobank.authserver.exception.TokenNotFoundException;
 import ozdemir0ozdemir.nirobank.authserver.model.Token;
@@ -16,10 +18,12 @@ public class TokenService {
 
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
+    private final UserClient userClient;
 
     public Token generateTokenSet(String username) {
 
-        // TODO: Query username in user-service and get authorities from user-service
+        User user = userClient.findUserByUsername(username);
+
         Optional<Token> optionalOldToken = this.tokenRepository
                 .findTokenByUsername(username);
 
@@ -27,12 +31,13 @@ public class TokenService {
             throw new TokenGenerationException("You have an access token");
         }
 
-        return this.createNewTokenSetFor(username, List.of());  // FIXME: Authorities is empty
+        return this.createNewTokenSetFor(username, user.authorities());
     }
 
     public Token refreshOrGetTokenSet(String username, String refreshToken) {
 
-        // TODO: Query username in user-service and get authorities from user-service
+        User user = userClient.findUserByUsername(username);
+
         Token oldToken = this.tokenRepository
                 .findTokenByUsernameAndRefreshToken(username, refreshToken)
                 .orElseThrow(() -> new TokenNotFoundException("Refresh token not found"));
@@ -48,8 +53,7 @@ public class TokenService {
             throw new TokenNotFoundException("Refresh token is expired. You can generate a new token set");
         }
 
-        // FIXME: Authorities is empty
-        return this.createNewTokenSetFor(username, List.of());
+        return this.createNewTokenSetFor(username, user.authorities());
     }
 
     private Token createNewTokenSetFor(String username, List<String> authorities) {

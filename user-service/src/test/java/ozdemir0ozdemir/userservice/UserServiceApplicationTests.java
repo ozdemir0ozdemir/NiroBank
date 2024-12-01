@@ -1,4 +1,4 @@
-package ozdemir0zdemir.userservice;
+package ozdemir0ozdemir.userservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

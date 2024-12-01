@@ -1,4 +1,4 @@
-package ozdemir0zdemir.userservice.request;
+package ozdemir0ozdemir.userservice.request;
 
 public record SaveUser(String username) {
 }

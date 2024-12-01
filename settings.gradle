@@ -1,2 +1,3 @@
 rootProject.name = 'NiroBank'
-include("auth-service")
+include ':auth-service',':common',':user-service'
+

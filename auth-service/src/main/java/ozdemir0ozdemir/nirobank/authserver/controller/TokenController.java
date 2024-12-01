@@ -20,11 +20,18 @@ class TokenController {
 
     @PostMapping("/access")
     ResponseEntity<Token> generateAccessToken(@RequestBody GenerateAccessToken request) {
-       throw new IllegalStateException("Not Implemented");
+       Token token = this.tokenService
+               .generateTokenSet(request.username());
+
+       return ResponseEntity.ok(token);
     }
 
     @PostMapping("/refresh")
     ResponseEntity<?> refreshAccessToken(@RequestBody RefreshAccessToken request) {
-        throw new IllegalStateException("Not Implemented");
+
+        Token token = this.tokenService
+                .refreshOrGetTokenSet(request.username(), request.refreshToken());
+
+        return ResponseEntity.ok(token);
     }
 }
