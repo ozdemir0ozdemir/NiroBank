@@ -2,6 +2,8 @@ package ozdemir0ozdemir.nirobank.authserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ozdemir0ozdemir.nirobank.authserver.exception.TokenGenerationException;
+import ozdemir0ozdemir.nirobank.authserver.exception.TokenNotFoundException;
 import ozdemir0ozdemir.nirobank.authserver.model.Token;
 import ozdemir0ozdemir.nirobank.authserver.repository.TokenRepository;
 
@@ -22,7 +24,7 @@ public class TokenService {
                 .findTokenByUsername(username);
 
         if(optionalOldToken.isPresent()){
-            throw new RuntimeException("You have an access token"); // FIXME: Customize exception
+            throw new TokenGenerationException("You have an access token");
         }
 
         return this.createNewTokenSetFor(username, List.of());  // FIXME: Authorities is empty
@@ -33,7 +35,7 @@ public class TokenService {
         // TODO: Query username in user-service and get authorities from user-service
         Token oldToken = this.tokenRepository
                 .findTokenByUsernameAndRefreshToken(username, refreshToken)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found")); // FIXME: Customize exception
+                .orElseThrow(() -> new TokenNotFoundException("Refresh token not found"));
 
         boolean isAccessTokenExpired = this.jwtService.isTokenExpired(oldToken.accessToken());
         boolean isRefreshTokenExpired = this.jwtService.isTokenExpired(oldToken.refreshToken());
@@ -43,7 +45,7 @@ public class TokenService {
         }
         else if (isRefreshTokenExpired) {
             this.tokenRepository.revokeToken(username, oldToken);
-            throw new RuntimeException("Refresh token is expired. You can generate a new token set"); // FIXME: Customize exception
+            throw new TokenNotFoundException("Refresh token is expired. You can generate a new token set");
         }
 
         // FIXME: Authorities is empty
