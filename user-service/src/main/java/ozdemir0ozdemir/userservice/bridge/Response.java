@@ -15,11 +15,11 @@ public class Response<T> {
     private String status;
     private String message;
 
-    public static Response<User> userFound(User user) {
-        return new Response<>(user, Instant.now(), "success", "User found");
+    public static <T> Response<T> found(T object) {
+        return new Response<>(object, Instant.now(), "succeeded", "Found");
     }
 
-    public static Response<User> userNotFound() {
-        return new Response<>(null, Instant.now(), "failed", "User not found");
+    public static <T> Response<T> notFound() {
+        return new Response<>(null, Instant.now(), "failed", "Not Found");
     }
 }

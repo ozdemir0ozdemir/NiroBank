@@ -3,6 +3,7 @@ package ozdemir0ozdemir.userservice.domain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.userservice.bridge.User;
 
@@ -13,15 +14,17 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public void saveUser(String username) {
-        this.saveUser(username, Role.USER);
+    public void saveUser(String username, String password) {
+        this.saveUser(username, password, Role.USER);
     }
 
-    public void saveUser(String username, Role role) {
+    public void saveUser(String username, String password, Role role) {
         this.userRepository
                 .save(new UserEntity()
                 .setUsername(username)
+                .setPassword(passwordEncoder.encode(password))
                 .setRole(role));
     }
 
@@ -41,6 +44,10 @@ public class UserService {
         return this.userRepository
                 .findByUsername(username)
                 .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+    }
+
+    public void deleteUserByUserId(Long id) {
+        this.userRepository.deleteById(id);
     }
 
 }

@@ -19,14 +19,18 @@ import java.util.Objects;
 final class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "users_id_gen", sequenceName = "users_id_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_gen")
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true, updatable = false, nullable = false)
     private String username;
 
-    @Column(name = "role")
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 

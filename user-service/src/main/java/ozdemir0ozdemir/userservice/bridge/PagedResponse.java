@@ -21,10 +21,10 @@ public class PagedResponse<T> {
     private String status;
     private String message;
 
-    public static PagedResponse<User> usersPage(Page<User> userPage) {
+    public static <T> PagedResponse<T> usersPage(Page<T> userPage) {
         return new PagedResponse<>(
                 userPage.getContent(),
-                userPage.getNumber(),
+                userPage.getNumber() + 1,
                 userPage.getTotalPages(),
                 userPage.getTotalElements(),
                 userPage.getSize(),
@@ -32,7 +32,7 @@ public class PagedResponse<T> {
                 userPage.hasNext(),
                 Instant.now(),
                 "success",
-                "Users list returned"
+                "Request succeeded"
         );
     }
 }

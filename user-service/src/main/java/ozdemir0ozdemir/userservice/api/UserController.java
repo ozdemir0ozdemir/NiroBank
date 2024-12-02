@@ -17,8 +17,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 record UserController(UserService userService) {
 
     @PostMapping
-    ResponseEntity<Void> saveUser(@RequestBody SaveUserRequest request) {
-        this.userService().saveUser(request.username());
+    ResponseEntity<Void> registerUser(@RequestBody UserRegisterRequest request) {
+        this.userService.saveUser(request.username(), request.password());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{username}")
@@ -28,11 +28,16 @@ record UserController(UserService userService) {
         return ResponseEntity.created(location).build();
     }
 
+    @PostMapping("/login")
+    ResponseEntity<Void> login() {
+        throw new UnsupportedOperationException("Use token-service to implement login");
+    }
+
     @GetMapping
     ResponseEntity<PagedResponse<User>> findAllUsers(@RequestParam(name = "page", defaultValue = "1") Integer page,
                                                      @RequestParam(name = "size", defaultValue = "10") Integer size) {
         page = Math.max(0, page - 1);
-        size = Math.min(5, size);
+        size = Math.max(5, size);
         return ResponseEntity.ok(PagedResponse.usersPage(this.userService.findAllUsers(page, size)));
     }
 
@@ -40,9 +45,13 @@ record UserController(UserService userService) {
     ResponseEntity<Response<User>> findUserByUsername(@PathVariable String username) {
         return this.userService()
                 .findUserByUsername(username)
-                .map(user -> ResponseEntity.ok(Response.userFound(user)))
-                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.userNotFound()));
+                .map(user -> ResponseEntity.ok(Response.found(user)))
+                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.notFound()));
     }
 
-
+    @DeleteMapping("/{userId}")
+    ResponseEntity<Void> deleteUserByUserId(@PathVariable Long userId) {
+        this.userService.deleteUserByUserId(userId);
+        return ResponseEntity.noContent().build();
+    }
 }
