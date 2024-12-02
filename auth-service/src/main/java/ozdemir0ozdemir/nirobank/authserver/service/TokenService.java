@@ -2,8 +2,8 @@ package ozdemir0ozdemir.nirobank.authserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ozdemir0ozdemir.common.User;
-import ozdemir0ozdemir.nirobank.authserver.client.UserClient;
+import ozdemir0ozdemir.common.client.user.User;
+import ozdemir0ozdemir.common.client.user.UserClient;
 import ozdemir0ozdemir.nirobank.authserver.exception.TokenGenerationException;
 import ozdemir0ozdemir.nirobank.authserver.exception.TokenNotFoundException;
 import ozdemir0ozdemir.nirobank.authserver.model.Token;

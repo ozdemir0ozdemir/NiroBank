@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.common;
+package ozdemir0ozdemir.common.client.user;
 
 import java.util.List;
 

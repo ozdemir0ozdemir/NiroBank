@@ -2,10 +2,10 @@ version: 3
 
 tasks:
   start-infra:
-    cmd: docker compose -f ./containers/AuthServer.yml up -d
+    cmd: docker compose -f ./containers/NiroBank.yml up -d
 
   stop-infra:
-    cmd: docker compose -f ./containers/AuthServer.yml down
+    cmd: docker compose -f ./containers/NiroBank.yml down
 
   restart-infra:
     cmds:

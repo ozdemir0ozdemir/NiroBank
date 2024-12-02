@@ -1,12 +1,12 @@
-package ozdemir0ozdemir.userservice.model;
+package ozdemir0ozdemir.userservice.domain;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -14,11 +14,21 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class UserEntity {
+@Entity
+@Table(name = "users")
+final class UserEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
+
+    @Column(name = "username")
     private String username;
-    private List<String> authorities;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Override
     public boolean equals(Object other) {
@@ -29,10 +39,10 @@ public class UserEntity {
             return true;
         }
 
-        if(other instanceof UserEntity otherUser){
+        if (other instanceof UserEntity otherUser) {
             return this.id.equals(otherUser.id) &&
                     this.username.equals(otherUser.username) &&
-                    this.authorities.containsAll(otherUser.authorities);
+                    this.role.equals(otherUser.role);
         }
 
         return false;
@@ -40,12 +50,12 @@ public class UserEntity {
 
     @Override
     public String toString() {
-        return String.format("user: { id: %d, username: %s, authorities: %s}",
-                this.id, this.username, this.authorities.toString());
+        return String.format("user: { id: %d, username: %s, role: %s}",
+                this.id, this.username, this.role.name());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, authorities);
+        return Objects.hash(id, username, role);
     }
 }

@@ -40,6 +40,12 @@ dependencies {
 
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

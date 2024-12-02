@@ -27,7 +27,7 @@ class TokenController {
     }
 
     @PostMapping("/refresh")
-    ResponseEntity<?> refreshAccessToken(@RequestBody RefreshAccessToken request) {
+    ResponseEntity<Token> refreshAccessToken(@RequestBody RefreshAccessToken request) {
 
         Token token = this.tokenService
                 .refreshOrGetTokenSet(request.username(), request.refreshToken());

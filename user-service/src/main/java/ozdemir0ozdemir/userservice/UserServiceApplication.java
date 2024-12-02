@@ -4,7 +4,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import ozdemir0ozdemir.userservice.service.UserService;
+import ozdemir0ozdemir.userservice.domain.Role;
+import ozdemir0ozdemir.userservice.domain.UserService;
+
+import java.util.List;
 
 @SpringBootApplication
 public class UserServiceApplication {
@@ -15,9 +18,9 @@ public class UserServiceApplication {
 
     @Bean
     CommandLineRunner addExampleUsersRunner(UserService userService) {
-        return args -> {
-            userService.saveUser("spring-user");
-            userService.saveUser("user");
+        return _ -> {
+            userService.saveUser("admin", Role.ADMIN);
+            userService.saveUser("user", Role.USER);
         };
     }
 
