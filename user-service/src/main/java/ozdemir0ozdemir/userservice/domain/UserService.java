@@ -50,4 +50,7 @@ public class UserService {
         this.userRepository.deleteById(id);
     }
 
+    public void deleteAll() {
+        this.userRepository.deleteAll();
+    }
 }

@@ -17,7 +17,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 record UserController(UserService userService) {
 
     @PostMapping
-    ResponseEntity<Void> registerUser(@RequestBody UserRegisterRequest request) {
+    ResponseEntity<Void> registerUser(@RequestBody RegisterUserRequest request) {
         this.userService.saveUser(request.username(), request.password());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -34,10 +34,10 @@ record UserController(UserService userService) {
     }
 
     @GetMapping
-    ResponseEntity<PagedResponse<User>> findAllUsers(@RequestParam(name = "page", defaultValue = "1") Integer page,
+    ResponseEntity<PagedResponse<User>> findAllUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
                                                      @RequestParam(name = "size", defaultValue = "10") Integer size) {
         page = Math.max(0, page - 1);
-        size = Math.max(5, size);
+        size = Math.min(Math.max(5, size), 50);
         return ResponseEntity.ok(PagedResponse.usersPage(this.userService.findAllUsers(page, size)));
     }
 
