@@ -6,10 +6,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients(basePackages = "ozdemir0ozdemir.nirobank.client")
-public class AuthServerApplication {
+public class TokenServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthServerApplication.class, args);
+        SpringApplication.run(TokenServiceApplication.class, args);
     }
 
 }

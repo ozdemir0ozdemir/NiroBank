@@ -1,14 +1,18 @@
 package ozdemir0ozdemir.nirobank.client.userclient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.io.Serializable;
 import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Response<T> {
+public class Response<T> implements Serializable {
     private T object;
     private Instant respondAt;
     private String status;
     private String message;
+
+    public Response() {}
 
     public Response(T object, Instant respondAt, String status, String message) {
         this.object = object;
@@ -31,6 +35,22 @@ public class Response<T> {
 
     public String getStatus() {
         return status;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setObject(T object) {
+        this.object = object;
+    }
+
+    public void setRespondAt(Instant respondAt) {
+        this.respondAt = respondAt;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public static <T> Response<T> found(T object) {

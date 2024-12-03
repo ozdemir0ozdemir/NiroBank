@@ -13,6 +13,6 @@ public interface UserClient {
     void registerUser(@RequestBody RegisterUserRequest request);
 
     @GetMapping("/{username}")
-    Response<User> findUserByUsername(@PathVariable String username);
+    Response<User> findUserByUsername(@PathVariable(name = "username") String username);
 
 }

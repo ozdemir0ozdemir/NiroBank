@@ -31,7 +31,7 @@ public class TokenService {
             throw new TokenGenerationException("You have an access token");
         }
 
-        return this.createNewTokenSetFor(username, user.authorities());
+        return this.createNewTokenSetFor(username, user.role().getPermissions());
     }
 
     public Token refreshOrGetTokenSet(String username, String refreshToken) {
@@ -50,7 +50,7 @@ public class TokenService {
         }
         else if (!isRefreshTokenExpired) {
             this.tokenRepository.revokeToken(username, oldToken);
-            return this.createNewTokenSetFor(username, user.authorities());
+            return this.createNewTokenSetFor(username, user.role().getPermissions());
         }
 
         this.tokenRepository.revokeToken(username, oldToken);

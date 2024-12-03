@@ -6,13 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ozdemir0ozdemir.nirobank.client.userclient.Response;
+import ozdemir0ozdemir.nirobank.client.userclient.Role;
 import ozdemir0ozdemir.nirobank.client.userclient.User;
 import ozdemir0ozdemir.nirobank.client.userclient.UserClient;
 import ozdemir0ozdemir.nirobank.tokenservice.bridge.Token;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenGenerationException;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenNotFoundException;
-
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,9 +38,9 @@ class TokenServiceUnitTest {
     void should_GenerateNewAccessToken() {
 
         final String username = "ozdemir";
-        User user = new User(1L, username, List.of("USER:read"));
+        User user = new User(1L, username, Role.USER);
 
-        when(jwtService.generateBearerTokenFor(username, user.authorities()))
+        when(jwtService.generateBearerTokenFor(username, Role.USER.getPermissions()))
                 .thenReturn("accessToken");
 
         when(jwtService.generateRefreshTokenFor(username))
@@ -63,7 +62,7 @@ class TokenServiceUnitTest {
     void shouldNot_GenerateNewAccessToken() {
 
         final String username = "ozdemir";
-        User user = new User(1L, username, List.of("USER:read"));
+        User user = new User(1L, username, Role.USER);
 
         when(userClient.findUserByUsername(anyString()))
                 .thenReturn(Response.found(user));
@@ -79,7 +78,7 @@ class TokenServiceUnitTest {
     @Test
     void should_GetExistingToken_when_RefreshTokenRequested() {
         final String username = "ozdemir";
-        User user = new User(1L, username, List.of("USER:read"));
+        User user = new User(1L, username,Role.USER);
         Token token = new Token("accessToken", "refreshToken");
 
         when(userClient.findUserByUsername(anyString()))
@@ -99,7 +98,7 @@ class TokenServiceUnitTest {
     @Test
     void should_RefreshToken_when_RefreshTokenRequested_with_ExpiredAccessAndValidRefreshToken() {
         final String username = "ozdemir";
-        User user = new User(1L, username, List.of("USER:read"));
+        User user = new User(1L, username, Role.USER);
         Token token = new Token("accessToken", "refreshToken");
 
         when(userClient.findUserByUsername(anyString()))
@@ -133,7 +132,7 @@ class TokenServiceUnitTest {
     @Test
     void should_ThrowTokenNotFound_when_RefreshTokenRequested_with_ExpiredAccessAndRefreshToken() {
         final String username = "ozdemir";
-        User user = new User(1L, username, List.of("USER:read"));
+        User user = new User(1L, username, Role.USER);
         Token token = new Token("accessToken", "refreshToken");
 
         when(userClient.findUserByUsername(anyString()))

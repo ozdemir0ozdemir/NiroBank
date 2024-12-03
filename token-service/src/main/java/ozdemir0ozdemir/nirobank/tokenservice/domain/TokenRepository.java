@@ -10,11 +10,11 @@ import java.util.Set;
 @Repository
 final class TokenRepository {
 
-    private final Set<TokenCache> tokenList = new HashSet<>();
+    private final Set<TokenCache> tokenCacheSet = new HashSet<>();
 
     Optional<Token> findTokenByUsername(String username) {
 
-        Optional<TokenCache> optionalTokenCache = tokenList.stream()
+        Optional<TokenCache> optionalTokenCache = tokenCacheSet.stream()
                 .filter(cache -> cache.username().equals(username))
                 .findFirst();
 
@@ -28,7 +28,7 @@ final class TokenRepository {
 
     Optional<Token> findTokenByUsernameAndRefreshToken(String username, String refreshToken) {
 
-        Optional<TokenCache> optionalTokenCache = tokenList.stream()
+        Optional<TokenCache> optionalTokenCache = tokenCacheSet.stream()
                 .filter(cache -> cache.username().equals(username))
                 .filter(cache -> cache.refreshToken().equals(refreshToken))
                 .findFirst();
@@ -43,10 +43,14 @@ final class TokenRepository {
 
 
     void revokeToken(String username, Token token) {
-        this.tokenList.remove(new TokenCache(username, token.accessToken(), token.refreshToken()));
+        this.tokenCacheSet.remove(new TokenCache(username, token.accessToken(), token.refreshToken()));
     }
 
     void saveToken(String username, String accessToken, String refreshToken) {
-        this.tokenList.add(new TokenCache(username, accessToken, refreshToken));
+        this.tokenCacheSet.add(new TokenCache(username, accessToken, refreshToken));
+    }
+
+    Set<TokenCache> getTokenCacheSet() {
+        return Set.copyOf(this.tokenCacheSet);
     }
 }
