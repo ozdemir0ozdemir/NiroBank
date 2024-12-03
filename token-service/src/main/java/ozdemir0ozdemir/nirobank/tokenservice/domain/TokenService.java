@@ -1,13 +1,12 @@
-package ozdemir0ozdemir.nirobank.tokenservice.service;
+package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.nirobank.client.userclient.User;
 import ozdemir0ozdemir.nirobank.client.userclient.UserClient;
+import ozdemir0ozdemir.nirobank.tokenservice.bridge.Token;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenGenerationException;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenNotFoundException;
-import ozdemir0ozdemir.nirobank.tokenservice.model.Token;
-import ozdemir0ozdemir.nirobank.tokenservice.repository.TokenRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +21,7 @@ public class TokenService {
 
     public Token generateTokenSet(String username) {
 
+        // FIXME: turn to login request
         User user = userClient.findUserByUsername(username).getObject();
 
         Optional<Token> optionalOldToken = this.tokenRepository
@@ -48,12 +48,13 @@ public class TokenService {
         if (!isAccessTokenExpired) {
             return oldToken;
         }
-        else if (isRefreshTokenExpired) {
+        else if (!isRefreshTokenExpired) {
             this.tokenRepository.revokeToken(username, oldToken);
-            throw new TokenNotFoundException("Refresh token is expired. You can generate a new token set");
+            return this.createNewTokenSetFor(username, user.authorities());
         }
 
-        return this.createNewTokenSetFor(username, user.authorities());
+        this.tokenRepository.revokeToken(username, oldToken);
+        throw new TokenNotFoundException("Refresh token is expired. You should generate a new token set");
     }
 
     private Token createNewTokenSetFor(String username, List<String> authorities) {

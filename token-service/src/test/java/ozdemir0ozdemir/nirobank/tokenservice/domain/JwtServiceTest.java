@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.nirobank.tokenservice.service;
+package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
 
 import io.jsonwebtoken.*;
@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import ozdemir0ozdemir.nirobank.tokenservice.configuration.BearerTokenConfiguration;
+import ozdemir0ozdemir.nirobank.tokenservice.config.BearerTokenConfiguration;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;

@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.nirobank.tokenservice.request;
+package ozdemir0ozdemir.nirobank.tokenservice.api;
 
 public record RefreshAccessToken(String username, String refreshToken) {
 }

@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.nirobank.tokenservice.service;
+package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import ozdemir0ozdemir.nirobank.tokenservice.configuration.BearerTokenConfiguration;
+import ozdemir0ozdemir.nirobank.tokenservice.config.BearerTokenConfiguration;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +27,7 @@ public final class JwtService {
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
 
-    public JwtService(@NonNull BearerTokenConfiguration configuration) throws
+    JwtService(@NonNull BearerTokenConfiguration configuration) throws
             NoSuchAlgorithmException,
             InvalidKeySpecException {
 

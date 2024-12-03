@@ -28,11 +28,6 @@ record UserController(UserService userService) {
         return ResponseEntity.created(location).build();
     }
 
-    @PostMapping("/login")
-    ResponseEntity<Void> login() {
-        throw new UnsupportedOperationException("Use token-service to implement login");
-    }
-
     @GetMapping
     ResponseEntity<PagedResponse<User>> findAllUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
                                                      @RequestParam(name = "size", defaultValue = "10") Integer size) {

@@ -12,9 +12,6 @@ public interface UserClient {
     @PostMapping
     void registerUser(@RequestBody RegisterUserRequest request);
 
-    @PostMapping("/login")
-    void login();
-
     @GetMapping("/{username}")
     Response<User> findUserByUsername(@PathVariable String username);
 

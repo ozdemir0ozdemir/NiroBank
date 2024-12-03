@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.nirobank.tokenservice.configuration;
+package ozdemir0ozdemir.nirobank.tokenservice.config;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
