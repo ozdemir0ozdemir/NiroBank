@@ -39,7 +39,7 @@ record UserController(UserService userService) {
 
         return ResponseEntity.created(location).build();
     }
-    
+
     @GetMapping
     ResponseEntity<PagedResponse<User>> findAllUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
                                                      @RequestParam(name = "size", defaultValue = "10") Integer size,
