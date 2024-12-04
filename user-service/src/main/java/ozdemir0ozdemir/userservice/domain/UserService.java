@@ -28,6 +28,25 @@ public class UserService {
                 .setRole(role));
     }
 
+    // Read Operations
+    public Page<User> findUserByUsername(String username) {
+        return this.userRepository
+                .findByUsername(username)
+                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+    }
+
+    public Page<User> findUsersByRole(int pageNumber, int pageSize, Role role) {
+        return this.userRepository
+                .findByRole(role, PageRequest.of(pageNumber, pageSize))
+                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+    }
+
+    public Page<User> findUserByUsernameAndRole(String username, Role role) {
+        return this.userRepository
+                .findByUsernameAndRole(username, role)
+                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+    }
+
     public Page<User> findAllUsers(int pageNumber, int pageSize) {
         return this.userRepository
                 .findAll(PageRequest.of(pageNumber, pageSize))
@@ -40,11 +59,7 @@ public class UserService {
                 .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
     }
 
-    public Optional<User> findUserByUsername(String username) {
-        return this.userRepository
-                .findByUsername(username)
-                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
-    }
+
 
     public void deleteUserByUserId(Long id) {
         this.userRepository.deleteById(id);

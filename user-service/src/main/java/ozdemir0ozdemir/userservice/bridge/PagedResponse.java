@@ -21,7 +21,12 @@ public class PagedResponse<T> {
     private String status;
     private String message;
 
-    public static <T> PagedResponse<T> usersPage(Page<T> userPage) {
+    public static <T> PagedResponse<T> of(Page<T> userPage) {
+        return PagedResponse.of(userPage, "succeeded", "request succeeded");
+    }
+
+
+    public static <T> PagedResponse<T> of(Page<T> userPage, String status, String message) {
         return new PagedResponse<>(
                 userPage.getContent(),
                 userPage.getNumber() + 1,
@@ -31,8 +36,8 @@ public class PagedResponse<T> {
                 userPage.hasPrevious(),
                 userPage.hasNext(),
                 Instant.now(),
-                "success",
-                "Request succeeded"
+                status,
+                message
         );
     }
 }
