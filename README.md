@@ -1,4 +1,3 @@
-## Auth-Server Notes
 ### RSA Cert generation using openssl (Available on both Windows and GNU/Linux)
 - openssl genrsa -out keypair.pem 2048
 - openssl rsa -in keypair.pem -pubout -out public.pem

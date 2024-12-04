@@ -67,11 +67,10 @@ record UserController(UserService userService) {
                 .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found")));
     }
 
-    @PatchMapping("/{userId}")
-    ResponseEntity<Void> changeUserRoleByUserId(@PathVariable Long userId,
-                                                @RequestBody ChangeUserRole request) {
+    @PatchMapping
+    ResponseEntity<Void> changeUserRoleByUserId(@RequestBody ChangeUserRole request) {
 
-        this.userService.changeUserRoleByUsernameAndUserId(request.role(), request.username(), userId);
+        this.userService.changeUserRoleByUsernameAndUserId(request.role(), request.username());
         return ResponseEntity.noContent().build();
     }
 

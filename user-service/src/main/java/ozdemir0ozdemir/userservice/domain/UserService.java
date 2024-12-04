@@ -2,6 +2,7 @@ package ozdemir0ozdemir.userservice.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class UserService {
 
     public void saveUser(String username, String password, Role role) {
 
-        boolean usernameFound = !this.userRepository.findByUsername(username)
+        boolean usernameFound = !this.userRepository.findByUsername(username, PageRequest.of(0, 1))
                 .toList()
                 .isEmpty();
 
@@ -40,7 +41,7 @@ public class UserService {
     // Read Operations
     public Page<User> findUserByUsername(String username) {
         return this.userRepository
-                .findByUsername(username)
+                .findByUsername(username, PageRequest.of(0, 1))
                 .map(UserService::entityToUser);
     }
 
@@ -52,7 +53,7 @@ public class UserService {
 
     public Page<User> findUserByUsernameAndRole(String username, Role role) {
         return this.userRepository
-                .findByUsernameAndRole(username, role)
+                .findByUsernameAndRole(username, role, PageRequest.of(0, 1))
                 .map(UserService::entityToUser);
     }
 
@@ -69,9 +70,9 @@ public class UserService {
     }
 
     // Update Operations
-    public void changeUserRoleByUsernameAndUserId(Role role, String username, Long userId) {
+    public void changeUserRoleByUsernameAndUserId(Role role, String username) {
         this.userRepository
-                .changeUserRoleByUsernameAndUserId(role, username, userId);
+                .changeUserRoleByUsername(username, role);
     }
 
     public void changeUserPassword(String username, String password) {
@@ -82,10 +83,6 @@ public class UserService {
     // Delete Operations
     public void deleteUserByUserId(Long id) {
         this.userRepository.deleteById(id);
-    }
-
-    public void deleteAll() {
-        this.userRepository.deleteAll();
     }
 
     // Static Helper
