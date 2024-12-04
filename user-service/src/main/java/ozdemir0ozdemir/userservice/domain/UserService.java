@@ -17,6 +17,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public void saveUser(String username, String password) {
+        // FIXME: throw username already used exception
+
         this.saveUser(username, password, Role.USER);
     }
 
@@ -59,8 +61,18 @@ public class UserService {
                 .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
     }
 
+    // Update Operations
+    public void changeUserRoleByUsernameAndUserId(Role role, String username, Long userId) {
+        this.userRepository
+                .changeUserRoleByUsernameAndUserId(role, username, userId);
+    }
 
+    public void changeUserPassword(String username, String password) {
+        this.userRepository
+                .changePasswordByUsername(username, passwordEncoder.encode(password));
+    }
 
+    // Delete Operations
     public void deleteUserByUserId(Long id) {
         this.userRepository.deleteById(id);
     }

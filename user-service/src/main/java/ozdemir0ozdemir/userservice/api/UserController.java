@@ -17,19 +17,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("/api/v1/users")
 record UserController(UserService userService) {
-
-    // TODO: Implement all CRUD Functionality
-    // 1 - Create User
-    // 2 - Get All Users
-    // 3 - Make all users endpoint using search (username & role)
-    // 4 - Get a User by userId
-    // 5 - Delete By userId
-    // 6 - Change user's role by userId
-    // 7 - Change user's password by userId
-
-
+    
     @PostMapping
-    ResponseEntity<Void> registerUser(@RequestBody RegisterUserRequest request) {
+    ResponseEntity<Void> registerUser(@RequestBody RegisterUser request) {
         this.userService.saveUser(request.username(), request.password());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -41,7 +31,7 @@ record UserController(UserService userService) {
     }
 
     @GetMapping
-    ResponseEntity<PagedResponse<User>> findAllUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
+    ResponseEntity<PagedResponse<User>> getAllUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
                                                      @RequestParam(name = "size", defaultValue = "10") Integer size,
                                                      @RequestParam(name = "username", required = false) String username,
                                                      @RequestParam(name = "role", required = false) Role role) {
@@ -67,13 +57,27 @@ record UserController(UserService userService) {
         return ResponseEntity.ok(PagedResponse.of(usersPage));
     }
 
-    // FIXME: change path variable to user-id
-    @GetMapping("/{username}")
-    ResponseEntity<Response<User>> findUserByUsername(@PathVariable String username) {
+    @GetMapping("/{userId}")
+    ResponseEntity<Response<User>> getUserByUserId(@PathVariable Long userId) {
         return this.userService()
-                .findUserByUsername(username)
+                .findUserById(userId)
                 .map(user -> ResponseEntity.ok(Response.found(user)))
                 .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.notFound()));
+    }
+
+    @PatchMapping("/{userId}")
+    ResponseEntity<Void> changeUserRoleByUserId(@PathVariable Long userId,
+                                                @RequestBody ChangeUserRole request) {
+
+        this.userService.changeUserRoleByUsernameAndUserId(request.role(), request.username(), userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping
+    ResponseEntity<Void> changeUserPassword(@RequestBody ChangeUserPassword request) {
+
+        this.userService.changeUserPassword(request.username(), request.password());
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{userId}")
