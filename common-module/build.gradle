@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+
+}
+
+group = 'ozdemir0ozdemir'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.0'
+    implementation 'org.springframework.data:spring-data-commons:3.3.0'
+}
+
+
+
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
+    }
+}
+

@@ -1,3 +1,6 @@
 rootProject.name = 'NiroBank'
-include ':token-service',':user-client',':user-service'
+include ':token-service',
+        ':user-client',
+        ':user-service',
+        ':common-module'
 

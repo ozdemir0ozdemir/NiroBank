@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.userservice.api;
+package ozdemir0ozdemir.userservice.request;
 
 import ozdemir0ozdemir.userservice.domain.Role;
 

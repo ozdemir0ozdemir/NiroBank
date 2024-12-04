@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ozdemir0ozdemir.userservice.bridge.User;
+import ozdemir0ozdemir.userservice.exception.UsernameAlreadyExistsException;
 
 import java.util.Optional;
 
@@ -17,12 +17,19 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public void saveUser(String username, String password) {
-        // FIXME: throw username already used exception
-
-        this.saveUser(username, password, Role.USER);
+               this.saveUser(username, password, Role.USER);
     }
 
     public void saveUser(String username, String password, Role role) {
+
+        boolean usernameFound = !this.userRepository.findByUsername(username)
+                .toList()
+                .isEmpty();
+
+        if(usernameFound){
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
+
         this.userRepository
                 .save(new UserEntity()
                 .setUsername(username)
@@ -34,31 +41,31 @@ public class UserService {
     public Page<User> findUserByUsername(String username) {
         return this.userRepository
                 .findByUsername(username)
-                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+                .map(UserService::entityToUser);
     }
 
     public Page<User> findUsersByRole(int pageNumber, int pageSize, Role role) {
         return this.userRepository
                 .findByRole(role, PageRequest.of(pageNumber, pageSize))
-                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+                .map(UserService::entityToUser);
     }
 
     public Page<User> findUserByUsernameAndRole(String username, Role role) {
         return this.userRepository
                 .findByUsernameAndRole(username, role)
-                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+                .map(UserService::entityToUser);
     }
 
     public Page<User> findAllUsers(int pageNumber, int pageSize) {
         return this.userRepository
                 .findAll(PageRequest.of(pageNumber, pageSize))
-                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+                .map(UserService::entityToUser);
     }
 
     public Optional<User> findUserById(Long userId) {
         return this.userRepository
                 .findById(userId)
-                .map(entity -> new User(entity.getId(), entity.getUsername(), entity.getRole()));
+                .map(UserService::entityToUser);
     }
 
     // Update Operations
@@ -79,5 +86,10 @@ public class UserService {
 
     public void deleteAll() {
         this.userRepository.deleteAll();
+    }
+
+    // Static Helper
+    private static User entityToUser(UserEntity entity) {
+        return new User(entity.getId(), entity.getUsername(), entity.getRole());
     }
 }

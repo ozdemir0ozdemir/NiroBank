@@ -4,11 +4,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ozdemir0ozdemir.userservice.bridge.PagedResponse;
-import ozdemir0ozdemir.userservice.bridge.Response;
-import ozdemir0ozdemir.userservice.bridge.User;
+import ozdemir0ozdemir.common.response.*;
+import ozdemir0ozdemir.userservice.domain.User;
 import ozdemir0ozdemir.userservice.domain.Role;
 import ozdemir0ozdemir.userservice.domain.UserService;
+import ozdemir0ozdemir.userservice.request.ChangeUserPassword;
+import ozdemir0ozdemir.userservice.request.ChangeUserRole;
+import ozdemir0ozdemir.userservice.request.RegisterUser;
 
 import java.net.URI;
 
@@ -17,7 +19,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("/api/v1/users")
 record UserController(UserService userService) {
-    
+
     @PostMapping
     ResponseEntity<Void> registerUser(@RequestBody RegisterUser request) {
         this.userService.saveUser(request.username(), request.password());
@@ -54,15 +56,15 @@ record UserController(UserService userService) {
             usersPage = this.userService.findAllUsers(page, size);
         }
 
-        return ResponseEntity.ok(PagedResponse.of(usersPage));
+        return ResponseEntity.ok(PagedResponse.succeeded(usersPage, "User(s) found"));
     }
 
     @GetMapping("/{userId}")
     ResponseEntity<Response<User>> getUserByUserId(@PathVariable Long userId) {
         return this.userService()
                 .findUserById(userId)
-                .map(user -> ResponseEntity.ok(Response.found(user)))
-                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.notFound()));
+                .map(user -> ResponseEntity.ok(Response.succeeded(user, "User found")))
+                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found")));
     }
 
     @PatchMapping("/{userId}")
