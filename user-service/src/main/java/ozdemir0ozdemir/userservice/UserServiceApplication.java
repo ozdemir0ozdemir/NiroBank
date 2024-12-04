@@ -21,7 +21,7 @@ public class UserServiceApplication {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+//    @Bean
     CommandLineRunner addExampleUsersRunner(UserService userService) {
         return _ -> {
             boolean isAnyUserExists  = userService.findAllUsers(0, 20).getTotalElements() > 0L;

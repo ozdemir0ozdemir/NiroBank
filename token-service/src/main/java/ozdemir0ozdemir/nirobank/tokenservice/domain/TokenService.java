@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.nirobank.client.userclient.User;
 import ozdemir0ozdemir.nirobank.client.userclient.UserClient;
 import ozdemir0ozdemir.nirobank.tokenservice.bridge.Token;
+import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenExpiredException;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenGenerationException;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenNotFoundException;
 
@@ -28,7 +29,7 @@ public class TokenService {
                 .findTokenByUsername(username);
 
         if(optionalOldToken.isPresent()){
-            throw new TokenGenerationException("You have an access token");
+            throw new TokenGenerationException("You already have an access token");
         }
 
         return this.createNewTokenSetFor(username, user.role().getPermissions());
@@ -54,7 +55,19 @@ public class TokenService {
         }
 
         this.tokenRepository.revokeToken(username, oldToken);
-        throw new TokenNotFoundException("Refresh token is expired. You should generate a new token set");
+        throw new TokenExpiredException("Refresh token is expired. You should generate a new token set");
+    }
+
+    public Token getExistingTokenFor(String username) {
+
+        User user = this.userClient.findUserByUsername(username).getObject();
+
+        return this.tokenRepository.findTokenByUsername(user.username())
+                .orElseThrow(() -> new TokenNotFoundException("Token not found"));
+    }
+
+    public void revokeTokenFor(String username) {
+        this.tokenRepository.revokeTokenFor(username);
     }
 
     private Token createNewTokenSetFor(String username, List<String> authorities) {
@@ -64,4 +77,5 @@ public class TokenService {
         this.tokenRepository.saveToken(username, newAccessToken, newRefreshToken);
         return new Token(newAccessToken, newRefreshToken);
     }
+
 }

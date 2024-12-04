@@ -60,4 +60,9 @@ public class Response<T> implements Serializable {
     public static <T> Response<T> notFound() {
         return new Response<T>(null, Instant.now(), "failed", "Not Found");
     }
+
+    public static <T> Response<T> exception(String message) {
+        return new Response<T>(null, Instant.now(), "failed", message);
+    }
+
 }

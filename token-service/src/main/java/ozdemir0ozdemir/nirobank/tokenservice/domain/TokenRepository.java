@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-final class TokenRepository {
+public final class TokenRepository {
 
     private final Set<TokenCache> tokenCacheSet = new HashSet<>();
 
@@ -18,7 +18,7 @@ final class TokenRepository {
                 .filter(cache -> cache.username().equals(username))
                 .findFirst();
 
-        if(optionalTokenCache.isPresent()){
+        if (optionalTokenCache.isPresent()) {
             TokenCache cache = optionalTokenCache.get();
             return Optional.of(new Token(cache.accessToken(), cache.refreshToken()));
         }
@@ -33,7 +33,7 @@ final class TokenRepository {
                 .filter(cache -> cache.refreshToken().equals(refreshToken))
                 .findFirst();
 
-        if(optionalTokenCache.isPresent()){
+        if (optionalTokenCache.isPresent()) {
             TokenCache cache = optionalTokenCache.get();
             return Optional.of(new Token(cache.accessToken(), cache.refreshToken()));
         }
@@ -52,5 +52,13 @@ final class TokenRepository {
 
     Set<TokenCache> getTokenCacheSet() {
         return Set.copyOf(this.tokenCacheSet);
+    }
+
+    public void revokeTokenFor(String username) {
+        this.tokenCacheSet
+                .stream()
+                .filter(cache -> cache.username().equals(username))
+                .findFirst()
+                .ifPresent(this.tokenCacheSet::remove);
     }
 }

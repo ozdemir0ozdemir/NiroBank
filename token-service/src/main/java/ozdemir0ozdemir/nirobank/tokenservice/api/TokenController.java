@@ -2,10 +2,7 @@ package ozdemir0ozdemir.nirobank.tokenservice.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ozdemir0ozdemir.nirobank.tokenservice.bridge.Token;
 import ozdemir0ozdemir.nirobank.tokenservice.domain.TokenService;
 
@@ -29,6 +26,15 @@ class TokenController {
 
         Token token = this.tokenService
                 .refreshOrGetTokenSet(request.username(), request.refreshToken());
+
+        return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/{username}")
+    ResponseEntity<Token> getExistingTokenFor(@PathVariable String username) {
+
+        Token token = this.tokenService
+                .getExistingTokenFor(username);
 
         return ResponseEntity.ok(token);
     }
