@@ -50,7 +50,7 @@ public final class JwtService {
     }
 
 
-    public boolean isTokenExpired(@NonNull final String token) {
+    public boolean isJwtExpired(@NonNull final String token) {
         try {
             Jwts
                     .parserBuilder()
@@ -64,21 +64,21 @@ public final class JwtService {
         }
     }
 
-    public String generateBearerTokenFor(@NonNull final String username,
-                                         @NonNull final List<String> authorities) {
+    public String generateJwtFor(@NonNull final String username,
+                                 @NonNull final List<String> authorities) {
 
-        return generateBearerToken(username, authorities, Instant.now(), false);
+        return generateJwt(username, authorities, Instant.now(), false);
     }
 
-    public String generateRefreshTokenFor(@NonNull final String username) {
-        return generateBearerToken(username, List.of("SCOPE_token:refresh"), Instant.now(), true);
+    public String generateRefreshJwtFor(@NonNull final String username) {
+        return generateJwt(username, List.of("SCOPE_token:refresh"), Instant.now(), true);
     }
 
 
-    String generateBearerToken(@NonNull final String username,
-                               @NonNull final List<String> authorities,
-                               @NonNull final Instant issuedAt,
-                               boolean isRefreshToken) {
+    String generateJwt(@NonNull final String username,
+                       @NonNull final List<String> authorities,
+                       @NonNull final Instant issuedAt,
+                       boolean isRefreshToken) {
 
         Instant expiredAt = issuedAt.plus(
                 isRefreshToken ? configuration.getRefreshExpiredAtAmount() : configuration.getExpiredAtAmount(),

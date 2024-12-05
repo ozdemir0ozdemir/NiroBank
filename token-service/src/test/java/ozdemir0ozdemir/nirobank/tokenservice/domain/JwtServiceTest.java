@@ -60,7 +60,7 @@ class JwtServiceTest {
     void shouldGenerateValidBearerTokenWithCorrectClaims() throws Exception {
 
         String token = jwtService
-                .generateBearerTokenFor("USER", List.of("USER", "ADMIN"));
+                .generateJwtFor("USER", List.of("USER", "ADMIN"));
 
         assertThat(token).isNotNull();
 
@@ -95,7 +95,7 @@ class JwtServiceTest {
     @Test
     void shouldThrowExpiredJwtException() throws Exception {
 
-        String token = jwtService.generateBearerToken(
+        String token = jwtService.generateJwt(
                 "USER",
                 List.of("USER", "ADMIN"),
                 Instant.now().minus(35L, ChronoUnit.MINUTES),
@@ -153,7 +153,7 @@ class JwtServiceTest {
     @Test
     void shouldReturnRefreshScopeAuthorityClaim() throws Exception {
 
-        String token = jwtService.generateRefreshTokenFor("USER");
+        String token = jwtService.generateRefreshJwtFor("USER");
         assertThat(token).isNotNull().isNotBlank();
 
         Claims claims = jwtService.getClaimsFrom(token);
@@ -170,20 +170,20 @@ class JwtServiceTest {
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCheckingTokensExpireStatus() throws Exception {
-        assertThatThrownBy(() -> jwtService.isTokenExpired(""))
+        assertThatThrownBy(() -> jwtService.isJwtExpired(""))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void shouldReturnTrueWhenCheckingTokensExpireStatus() throws Exception {
         String token = jwtService
-                .generateBearerToken(
+                .generateJwt(
                         "USER",
                         List.of("USER", "ADMIN"),
                         Instant.now().minus(31L, ChronoUnit.MINUTES),
                         false);
 
-        assertThat(jwtService.isTokenExpired(token))
+        assertThat(jwtService.isJwtExpired(token))
                 .isTrue();
     }
 }
