@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
-import org.mockserver.matchers.Times;
 import org.mockserver.verify.VerificationTimes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,6 +39,7 @@ class UserClientTest {
         mockServer.stop();
     }
 
+    // This test is sufficient since there are no implementations.
     @Test
     void should_GetUserById() throws Exception {
         // Given
