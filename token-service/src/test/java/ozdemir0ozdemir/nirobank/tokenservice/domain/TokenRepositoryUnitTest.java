@@ -30,7 +30,7 @@ class TokenRepositoryUnitTest {
         }
 
         // Expired Tokens
-        for (int i = 10; i < 20; i++) {
+        for (int i = 10; i < 17; i++) {
             entities.add(TokenEntity.of(USER + i, TOKEN + i, expired));
         }
     }

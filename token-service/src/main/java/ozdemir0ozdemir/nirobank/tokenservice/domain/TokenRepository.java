@@ -97,7 +97,7 @@ class TokenRepository {
     void revokeExpiredTokens() {
         Instant now = Instant.now();
         this.tokens.stream()
-                .filter(entity -> entity.expiresAt().isAfter(now))
+                .filter(entity -> entity.expiresAt().isBefore(now))
                 .forEach(entity -> entity.setTokenStatus(TokenStatus.REVOKED));
     }
 
