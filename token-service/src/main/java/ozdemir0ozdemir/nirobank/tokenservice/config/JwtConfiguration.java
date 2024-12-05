@@ -20,7 +20,7 @@ import java.util.Base64;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class BearerTokenConfiguration {
+public final class JwtConfiguration {
 
     private PKCS8EncodedKeySpec privateKeySpec;
     private X509EncodedKeySpec publicKeySpec;

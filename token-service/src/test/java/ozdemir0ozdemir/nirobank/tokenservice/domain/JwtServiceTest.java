@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import ozdemir0ozdemir.nirobank.tokenservice.config.BearerTokenConfiguration;
+import ozdemir0ozdemir.nirobank.tokenservice.config.JwtConfiguration;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -34,7 +34,7 @@ class JwtServiceTest {
 
         KeyPair keyPair = generator.generateKeyPair();
 
-        BearerTokenConfiguration configuration = Mockito.mock(BearerTokenConfiguration.class);
+        JwtConfiguration configuration = Mockito.mock(JwtConfiguration.class);
         when(configuration.getPublicKeySpec())
                 .thenReturn(new X509EncodedKeySpec(keyPair.getPublic().getEncoded()));
         when(configuration.getPrivateKeySpec())

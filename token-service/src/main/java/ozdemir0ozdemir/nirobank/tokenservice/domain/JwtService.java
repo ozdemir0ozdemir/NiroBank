@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import ozdemir0ozdemir.nirobank.tokenservice.config.BearerTokenConfiguration;
+import ozdemir0ozdemir.nirobank.tokenservice.config.JwtConfiguration;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -23,11 +23,11 @@ import java.util.UUID;
 @Service
 public final class JwtService {
 
-    private final BearerTokenConfiguration configuration;
+    private final JwtConfiguration configuration;
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
 
-    JwtService(@NonNull BearerTokenConfiguration configuration) throws
+    JwtService(@NonNull JwtConfiguration configuration) throws
             NoSuchAlgorithmException,
             InvalidKeySpecException {
 
