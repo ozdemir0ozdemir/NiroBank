@@ -49,7 +49,6 @@ public final class JwtService {
                 .getBody();
     }
 
-
     public boolean isJwtExpired(@NonNull final String token) {
         try {
             Jwts
@@ -70,10 +69,9 @@ public final class JwtService {
         return generateJwt(username, authorities, Instant.now(), false);
     }
 
-    public String generateRefreshJwtFor(@NonNull final String username) {
+    String generateRefreshJwtFor(@NonNull final String username) {
         return generateJwt(username, List.of("SCOPE_token:refresh"), Instant.now(), true);
     }
-
 
     String generateJwt(@NonNull final String username,
                        @NonNull final List<String> authorities,
