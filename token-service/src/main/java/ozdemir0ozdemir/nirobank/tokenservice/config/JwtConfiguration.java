@@ -15,7 +15,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
-@ConfigurationProperties(prefix = "bearer.token")
+@ConfigurationProperties(prefix = "jwt")
 @Component
 @NoArgsConstructor
 @Getter
