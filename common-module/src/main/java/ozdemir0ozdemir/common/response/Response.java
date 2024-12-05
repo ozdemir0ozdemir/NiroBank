@@ -52,7 +52,7 @@ public class Response<T> {
         return message;
     }
 
-    public T getObject() {
+    public T getPayload() {
         return payload;
     }
 
@@ -69,7 +69,7 @@ public class Response<T> {
         return this;
     }
 
-    public Response<T> setObject(T payload) {
+    public Response<T> setPayload(T payload) {
         this.payload = payload;
         return this;
     }
