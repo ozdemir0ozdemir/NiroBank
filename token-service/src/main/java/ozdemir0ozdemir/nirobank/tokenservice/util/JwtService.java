@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.nirobank.tokenservice.domain;
+package ozdemir0ozdemir.nirobank.tokenservice.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

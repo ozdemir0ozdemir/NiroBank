@@ -10,7 +10,7 @@ record JwtController() {
 
     @PostMapping
     void createTokenFor(@RequestBody CreateToken request) {
-        // If the user has a non-expired and valid access token then return it
+        // If the user has a non-expired access token then return it
 
         // Generate access token
 
