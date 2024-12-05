@@ -24,9 +24,10 @@ class TokenRepository {
     }
 
     // Create Operations
-    void saveToken(TokenEntity entity) {
+    String saveToken(TokenEntity entity) {
 
         this.tokens.add(entity);
+        return entity.tokenId();
     }
 
     // Read Operations
@@ -76,7 +77,7 @@ class TokenRepository {
     Set<TokenEntity> findExpiredTokens() {
         Instant now = Instant.now();
         return this.tokens.stream()
-                .filter(entity -> entity.expiredAt().isAfter(now))
+                .filter(entity -> entity.expiresAt().isAfter(now))
                 .collect(Collectors.toSet());
     }
 
@@ -96,14 +97,17 @@ class TokenRepository {
     void revokeExpiredTokens() {
         Instant now = Instant.now();
         this.tokens.stream()
-                .filter(entity -> entity.expiredAt().isAfter(now))
+                .filter(entity -> entity.expiresAt().isAfter(now))
                 .forEach(entity -> entity.setTokenStatus(TokenStatus.REVOKED));
     }
 
     // Delete Operations
     void deleteRevokedTokens() {
-        this.tokens.stream()
+
+        this.tokens
+                .stream()
                 .filter(entity -> entity.tokenStatus().equals(TokenStatus.REVOKED))
+                .collect(Collectors.toSet())
                 .forEach(this.tokens::remove);
     }
 }

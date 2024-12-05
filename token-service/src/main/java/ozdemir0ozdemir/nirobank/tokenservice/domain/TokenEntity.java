@@ -11,7 +11,7 @@ class TokenEntity {
     private String tokenId;
     private String username;
     private String token;
-    private Instant expiredAt;
+    private Instant expiresAt;
 
     @Setter
     private TokenStatus tokenStatus;
@@ -25,8 +25,8 @@ class TokenEntity {
                 TokenStatus.ACCEPTABLE);
     }
 
-    public Instant expiredAt() {
-        return expiredAt;
+    public Instant expiresAt() {
+        return expiresAt;
     }
 
     public String token() {
@@ -45,4 +45,14 @@ class TokenEntity {
         return username;
     }
 
+    @Override
+    public String toString() {
+        return "TokenEntity{" +
+                "expiresAt=" + expiresAt +
+                ", tokenId='" + tokenId + '\'' +
+                ", username='" + username + '\'' +
+                ", token='" + token + '\'' +
+                ", tokenStatus=" + tokenStatus +
+                '}';
+    }
 }
