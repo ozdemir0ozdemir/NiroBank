@@ -6,7 +6,7 @@ import ozdemir0ozdemir.nirobank.tokenservice.request.CreateToken;
 
 @RestController
 @RequestMapping("/api/v1/tokens")
-record JwtController() {
+record TokenController() {
 
     @PostMapping
     void createTokenFor(@RequestBody CreateToken request) {
@@ -16,7 +16,7 @@ record JwtController() {
 
         // Set old access token TokenStatus to REVOKED
 
-        // Save token to repository (in memory cache) formatting a JwtToken
+        // Save token to repository (in memory cache) formatting a TokenEntity
     }
 
     @GetMapping
