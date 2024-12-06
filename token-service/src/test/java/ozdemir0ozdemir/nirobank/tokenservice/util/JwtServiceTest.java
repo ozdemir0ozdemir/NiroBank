@@ -153,7 +153,7 @@ class JwtServiceTest {
     @Test
     void shouldReturnRefreshScopeAuthorityClaim() throws Exception {
 
-        String token = jwtService.generateRefreshJwtFor("USER");
+        String token = jwtService.generateRefreshJwtFor("USER", List.of("USER"));
         assertThat(token).isNotNull().isNotBlank();
 
         Claims claims = jwtService.getClaimsFrom(token);
@@ -164,7 +164,7 @@ class JwtServiceTest {
 
         @SuppressWarnings("unchecked")
         List<String> authorities = (List<String>) rawAuthorities;
-        assertThat(authorities).contains("SCOPE_token:refresh");
+        assertThat(authorities).contains("USER");
 
     }
 

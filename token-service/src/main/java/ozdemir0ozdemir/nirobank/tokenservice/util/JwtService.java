@@ -69,8 +69,9 @@ public final class JwtService {
         return generateJwt(username, authorities, Instant.now(), false);
     }
 
-    String generateRefreshJwtFor(@NonNull final String username) {
-        return generateJwt(username, List.of("SCOPE_token:refresh"), Instant.now(), true);
+    String generateRefreshJwtFor(@NonNull final String username,
+                                 @NonNull final List<String> authorities) {
+        return generateJwt(username, authorities, Instant.now(), true);
     }
 
     String generateJwt(@NonNull final String username,
