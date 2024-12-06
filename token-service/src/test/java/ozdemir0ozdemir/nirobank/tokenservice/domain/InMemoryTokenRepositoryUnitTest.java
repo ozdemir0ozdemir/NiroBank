@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
-class TokenRepositoryUnitTest {
+class InMemoryTokenRepositoryUnitTest {
 
     private static final Set<TokenEntity> entities = new HashSet<>();
 
-    private static final TokenRepository sut = new TokenRepository(entities);
+    private static final InMemoryTokenRepository sut = new InMemoryTokenRepository(entities);
 
     private static final String USER = "user";
     private static final String TOKEN = "token";

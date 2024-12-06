@@ -3,6 +3,7 @@ package ozdemir0ozdemir.nirobank.tokenservice.api;
 import org.springframework.web.bind.annotation.*;
 import ozdemir0ozdemir.nirobank.tokenservice.domain.TokenStatus;
 import ozdemir0ozdemir.nirobank.tokenservice.request.CreateToken;
+import ozdemir0ozdemir.nirobank.tokenservice.request.RefreshToken;
 
 @RestController
 @RequestMapping("/api/v1/tokens")
@@ -10,13 +11,16 @@ record TokenController() {
 
     @PostMapping
     void createTokenFor(@RequestBody CreateToken request) {
-        // If the user has a non-expired access token then return it
+        // If user has a refresh token already then revoke it
 
-        // Generate access token
+        // Generate Access and Refresh Token
+        // Store refresh token in postgres
+        // Return access token and refresh token id to the client
+    }
 
-        // Set old access token TokenStatus to REVOKED
+    @GetMapping("/refresh")
+    void refreshAccessToken(@RequestBody RefreshToken request) {
 
-        // Save token to repository (in memory cache) formatting a TokenEntity
     }
 
     @GetMapping

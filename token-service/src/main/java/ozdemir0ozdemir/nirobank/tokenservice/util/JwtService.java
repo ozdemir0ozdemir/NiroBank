@@ -70,7 +70,7 @@ public final class JwtService {
     }
 
     public String generateRefreshJwtFor(@NonNull final String username,
-                                 @NonNull final List<String> authorities) {
+                                        @NonNull final List<String> authorities) {
         return generateJwt(username, authorities, Instant.now(), true);
     }
 

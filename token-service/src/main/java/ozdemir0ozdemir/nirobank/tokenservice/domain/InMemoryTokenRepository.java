@@ -9,16 +9,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-class TokenRepository {
+class InMemoryTokenRepository {
 
     private final Set<TokenEntity> tokens;
 
-    public TokenRepository() {
+    public InMemoryTokenRepository() {
 
         this.tokens = new HashSet<>();
     }
 
-    public TokenRepository(Set<TokenEntity> tokens) {
+    public InMemoryTokenRepository(Set<TokenEntity> tokens) {
 
         this.tokens = tokens;
     }
