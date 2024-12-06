@@ -2,6 +2,7 @@ package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
 
 interface TokenJpaRepository extends PagingAndSortingRepository<TokenEntity, Long> {
 
-    void save(TokenEntity te);
+    TokenEntity save(TokenEntity te);
 
     Optional<TokenEntity> findByTokenId(String tokenId);
 
@@ -21,12 +22,14 @@ interface TokenJpaRepository extends PagingAndSortingRepository<TokenEntity, Lon
 
     Page<TokenEntity> findAllByUsernameAndTokenStatus(String username, TokenStatus status, PageRequest of);
 
-    @Query("select TokenEntity te from TokenEntity where te.expiresAt < current timestamp and te.tokenStatus = :tokenStatus ")
-    Page<TokenEntity> findAllExpiredTokensByTokenStatus(TokenStatus tokenStatus, PageRequest of);
+    @Query("from TokenEntity t where t.tokenStatus = :status and t.expiresAt < current_timestamp ")
+    Page<TokenEntity> findAllExpiredTokensByTokenStatus(TokenStatus status, PageRequest of);
 
+    @Modifying(clearAutomatically = true)
     @Query("update TokenEntity t set t.tokenStatus = 'REVOKED' where t.tokenId = :tokenId")
     void revokeTokenByTokenId(String tokenId);
 
+    @Modifying
     @Query("delete from TokenEntity t where t.tokenId = :tokenId")
     void deleteTokenByTokenId(String tokenId);
 }

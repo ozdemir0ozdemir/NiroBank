@@ -1,10 +1,15 @@
 package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -31,13 +36,14 @@ class TokenEntity {
     private String token;
 
     @Column(name = "expires_at", nullable = false)
-    private Instant expiresAt;
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private LocalDateTime expiresAt;
 
     @Column(name = "token_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private TokenStatus tokenStatus = TokenStatus.ACCEPTABLE;
 
-    static TokenEntity of(String username, String token, Instant expiresAt) {
+    static TokenEntity of(String username, String token, LocalDateTime expiresAt) {
         return new TokenEntity()
                 .setTokenId(username + ":" + UUID.randomUUID())
                 .setUsername(username)

@@ -3,6 +3,7 @@ package ozdemir0ozdemir.nirobank.tokenservice.domain;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -75,7 +76,7 @@ class InMemoryTokenRepository {
     }
 
     Set<TokenEntity> findExpiredTokens() {
-        Instant now = Instant.now();
+        LocalDateTime now = LocalDateTime.now();
         return this.tokens.stream()
                 .filter(entity -> entity.getExpiresAt().isAfter(now))
                 .collect(Collectors.toSet());
@@ -95,7 +96,7 @@ class InMemoryTokenRepository {
     }
 
     void revokeExpiredTokens() {
-        Instant now = Instant.now();
+        LocalDateTime now = LocalDateTime.now();
         this.tokens.stream()
                 .filter(entity -> entity.getExpiresAt().isBefore(now))
                 .forEach(entity -> entity.setTokenStatus(TokenStatus.REVOKED));

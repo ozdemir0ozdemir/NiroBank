@@ -2,7 +2,7 @@ package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
 import org.junit.jupiter.api.*;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,8 +21,8 @@ class InMemoryAccessTokenRepositoryUnitTest {
 
     @BeforeEach
     void beforeEach() {
-        Instant expiresAt = nowPlus30m();
-        Instant expired = nowMinus30m();
+        LocalDateTime expiresAt = nowPlus30m();
+        LocalDateTime expired = nowMinus30m();
 
         // Valid Tokens
         for (int i = 0; i < 10; i++) {
@@ -52,7 +52,7 @@ class InMemoryAccessTokenRepositoryUnitTest {
         assertThat(entity.getUsername()).isEqualTo(USER + "0");
         assertThat(entity.getToken()).isEqualTo(TOKEN + "0");
         assertThat(entity.getTokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
-        assertThat(entity.getExpiresAt()).isAfter(Instant.now().plus(29L, ChronoUnit.MINUTES));
+        assertThat(entity.getExpiresAt()).isAfter(nowPlus30m().minusMinutes(1));
     }
 
     @Test
@@ -122,12 +122,12 @@ class InMemoryAccessTokenRepositoryUnitTest {
         assertThat(entities.size()).isEqualTo(10);
     }
 
-    private static Instant nowPlus30m() {
-        return Instant.now().plus(30L, ChronoUnit.MINUTES);
+    private static LocalDateTime nowPlus30m() {
+        return LocalDateTime.now().plus(30L, ChronoUnit.MINUTES);
     }
 
-    private static Instant nowMinus30m() {
-        return Instant.now().minus(30L, ChronoUnit.MINUTES);
+    private static LocalDateTime nowMinus30m() {
+        return LocalDateTime.now().minus(30L, ChronoUnit.MINUTES);
     }
 
 }
