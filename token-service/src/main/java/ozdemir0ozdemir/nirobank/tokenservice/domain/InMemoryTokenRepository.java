@@ -27,19 +27,19 @@ class InMemoryTokenRepository {
     String saveToken(TokenEntity entity) {
 
         this.tokens.add(entity);
-        return entity.tokenId();
+        return entity.getTokenId();
     }
 
     // Read Operations
     Optional<TokenEntity> findTokenByTokenId(String tokenId) {
         return this.tokens.stream()
-                .filter(entity -> entity.tokenId().equals(tokenId))
+                .filter(entity -> entity.getTokenId().equals(tokenId))
                 .findFirst();
     }
 
     Set<TokenEntity> findTokensByUsername(String username) {
         return this.tokens.stream()
-                .filter(entity -> entity.username().equals(username))
+                .filter(entity -> entity.getUsername().equals(username))
                 .collect(Collectors.toSet());
     }
 
@@ -55,7 +55,7 @@ class InMemoryTokenRepository {
 
     Set<TokenEntity> findTokensByTokenStatus(TokenStatus status) {
         return this.tokens.stream()
-                .filter(entity -> entity.tokenStatus().equals(status))
+                .filter(entity -> entity.getTokenStatus().equals(status))
                 .collect(Collectors.toSet());
     }
 
@@ -69,35 +69,35 @@ class InMemoryTokenRepository {
 
     Set<TokenEntity> findTokensByUsernameAndTokenStatus(String username, TokenStatus status) {
         return this.tokens.stream()
-                .filter(entity -> entity.username().equals(username))
-                .filter(entity -> entity.tokenStatus().equals(status))
+                .filter(entity -> entity.getUsername().equals(username))
+                .filter(entity -> entity.getTokenStatus().equals(status))
                 .collect(Collectors.toSet());
     }
 
     Set<TokenEntity> findExpiredTokens() {
         Instant now = Instant.now();
         return this.tokens.stream()
-                .filter(entity -> entity.expiresAt().isAfter(now))
+                .filter(entity -> entity.getExpiresAt().isAfter(now))
                 .collect(Collectors.toSet());
     }
 
     // Update Operations
     void revokeTokenByTokenId(String tokenId) {
         this.tokens.stream()
-                .filter(entity -> entity.tokenId().equals(tokenId))
+                .filter(entity -> entity.getTokenId().equals(tokenId))
                 .forEach(entity -> entity.setTokenStatus(TokenStatus.REVOKED));
     }
 
     void revokeTokenByUsername(String username) {
         this.tokens.stream()
-                .filter(entity -> entity.username().equals(username))
+                .filter(entity -> entity.getUsername().equals(username))
                 .forEach(entity -> entity.setTokenStatus(TokenStatus.REVOKED));
     }
 
     void revokeExpiredTokens() {
         Instant now = Instant.now();
         this.tokens.stream()
-                .filter(entity -> entity.expiresAt().isBefore(now))
+                .filter(entity -> entity.getExpiresAt().isBefore(now))
                 .forEach(entity -> entity.setTokenStatus(TokenStatus.REVOKED));
     }
 
@@ -106,7 +106,7 @@ class InMemoryTokenRepository {
 
         this.tokens
                 .stream()
-                .filter(entity -> entity.tokenStatus().equals(TokenStatus.REVOKED))
+                .filter(entity -> entity.getTokenStatus().equals(TokenStatus.REVOKED))
                 .collect(Collectors.toSet())
                 .forEach(this.tokens::remove);
     }

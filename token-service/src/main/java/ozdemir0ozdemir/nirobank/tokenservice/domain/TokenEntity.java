@@ -1,19 +1,19 @@
 package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Data
 @AllArgsConstructor
+@Accessors(chain = true)
 class TokenEntity {
     private String tokenId;
     private String username;
     private String token;
     private Instant expiresAt;
-
-    @Setter
     private TokenStatus tokenStatus;
 
     static TokenEntity of(String username, String token, Instant expiredAt) {
@@ -25,34 +25,4 @@ class TokenEntity {
                 TokenStatus.ACCEPTABLE);
     }
 
-    public Instant expiresAt() {
-        return expiresAt;
-    }
-
-    public String token() {
-        return token;
-    }
-
-    public String tokenId() {
-        return tokenId;
-    }
-
-    public TokenStatus tokenStatus() {
-        return tokenStatus;
-    }
-
-    public String username() {
-        return username;
-    }
-
-    @Override
-    public String toString() {
-        return "TokenEntity{" +
-                "expiresAt=" + expiresAt +
-                ", tokenId='" + tokenId + '\'' +
-                ", username='" + username + '\'' +
-                ", token='" + token + '\'' +
-                ", tokenStatus=" + tokenStatus +
-                '}';
-    }
 }

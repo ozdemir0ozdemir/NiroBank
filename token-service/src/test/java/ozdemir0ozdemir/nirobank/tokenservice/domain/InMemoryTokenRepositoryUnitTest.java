@@ -49,10 +49,10 @@ class InMemoryTokenRepositoryUnitTest {
                 .get();
 
         assertThat(entity).isNotNull();
-        assertThat(entity.username()).isEqualTo(USER + "0");
-        assertThat(entity.token()).isEqualTo(TOKEN + "0");
-        assertThat(entity.tokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
-        assertThat(entity.expiresAt()).isAfter(Instant.now().plus(29L, ChronoUnit.MINUTES));
+        assertThat(entity.getUsername()).isEqualTo(USER + "0");
+        assertThat(entity.getToken()).isEqualTo(TOKEN + "0");
+        assertThat(entity.getTokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
+        assertThat(entity.getExpiresAt()).isAfter(Instant.now().plus(29L, ChronoUnit.MINUTES));
     }
 
     @Test
@@ -65,9 +65,9 @@ class InMemoryTokenRepositoryUnitTest {
         TokenEntity actualEntity = sut.findTokenByTokenId(tokenId).get();
 
         assertThat(actualEntity).isNotNull();
-        assertThat(actualEntity.username()).isEqualTo("admin");
-        assertThat(actualEntity.token()).isEqualTo("admin:token");
-        assertThat(actualEntity.tokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
+        assertThat(actualEntity.getUsername()).isEqualTo("admin");
+        assertThat(actualEntity.getToken()).isEqualTo("admin:token");
+        assertThat(actualEntity.getTokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
 
     }
 
@@ -75,20 +75,20 @@ class InMemoryTokenRepositoryUnitTest {
     void should_RevokeTokenByTokenId() {
 
         String tokenId = sut.saveToken(TokenEntity.of("admin", "admintoken", nowPlus30m()));
-        assertThat(sut.findTokenByTokenId(tokenId).get().tokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
+        assertThat(sut.findTokenByTokenId(tokenId).get().getTokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
 
         sut.revokeTokenByTokenId(tokenId);
-        assertThat(sut.findTokenByTokenId(tokenId).get().tokenStatus()).isEqualTo(TokenStatus.REVOKED);
+        assertThat(sut.findTokenByTokenId(tokenId).get().getTokenStatus()).isEqualTo(TokenStatus.REVOKED);
     }
 
     @Test
     void should_RevokeTokenByUsername() {
 
         String tokenId = sut.saveToken(TokenEntity.of("admin", "admintoken", nowPlus30m()));
-        assertThat(sut.findTokenByTokenId(tokenId).get().tokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
+        assertThat(sut.findTokenByTokenId(tokenId).get().getTokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
 
         sut.revokeTokenByUsername("admin");
-        assertThat(sut.findTokenByTokenId(tokenId).get().tokenStatus()).isEqualTo(TokenStatus.REVOKED);
+        assertThat(sut.findTokenByTokenId(tokenId).get().getTokenStatus()).isEqualTo(TokenStatus.REVOKED);
     }
 
     @Test
@@ -96,14 +96,14 @@ class InMemoryTokenRepositoryUnitTest {
 
         int beforeRevokedCount = entities
                 .stream()
-                .filter(entity -> entity.tokenStatus().equals(TokenStatus.ACCEPTABLE))
+                .filter(entity -> entity.getTokenStatus().equals(TokenStatus.ACCEPTABLE))
                 .collect(Collectors.toSet()).size();
 
         sut.revokeExpiredTokens();
 
         int afterRevokedCount = entities
                 .stream()
-                .filter(entity -> entity.tokenStatus().equals(TokenStatus.ACCEPTABLE))
+                .filter(entity -> entity.getTokenStatus().equals(TokenStatus.ACCEPTABLE))
                 .collect(Collectors.toSet()).size();
 
         assertThat(beforeRevokedCount).isNotEqualTo(afterRevokedCount);
