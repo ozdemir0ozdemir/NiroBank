@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class TokenService {
                 .setToken(token)
                 .setUsername(username)
                 .setTokenStatus(TokenStatus.ACCEPTABLE)
-                .setExpiresAt(LocalDateTime.parse(tokenClaims.getExpiration().toString()));
+                .setExpiresAt(tokenClaims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 
         this.repository.save(te);
 
@@ -125,7 +126,7 @@ public class TokenService {
                 refreshTokenId,
                 accessToken,
                 claims.getSubject(),
-                claims.getExpiration().toInstant(),
+                claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                 TokenStatus.ACCEPTABLE
         );
     }
