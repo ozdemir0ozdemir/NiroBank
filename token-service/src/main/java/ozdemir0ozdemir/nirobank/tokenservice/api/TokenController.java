@@ -10,7 +10,7 @@ import ozdemir0ozdemir.nirobank.tokenservice.request.RefreshToken;
 record TokenController() {
 
     @PostMapping
-    void createTokenFor(@RequestBody CreateToken request) {
+    void login(@RequestBody CreateToken request) {
         // If user has a refresh token already then revoke it
 
         // Generate Access and Refresh Token
@@ -25,7 +25,12 @@ record TokenController() {
 
     @GetMapping
     void findTokens(@RequestParam(name = "username", required = false) String username,
-                    @RequestParam(name = "token-status", required = false) TokenStatus tokenStatus) {
+                    @RequestParam(name = "token-status", required = false) TokenStatus tokenStatus,
+                    @RequestParam(name = "page-number", defaultValue = "0") int pageNumber,
+                    @RequestParam(name = "page-size", defaultValue = "10") int pageSize) {
+
+        int page = Math.max(0, pageNumber - 1);
+        int size = Math.min(Math.max(5, pageSize), 50);
     }
 
     @GetMapping("/{tokenId}")

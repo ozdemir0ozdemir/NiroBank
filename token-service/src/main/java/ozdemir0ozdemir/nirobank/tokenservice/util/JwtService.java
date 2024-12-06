@@ -15,17 +15,16 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public final class JwtService {
 
+    public static final String USER_AUTHORITIES = "authorities";
     private final JwtConfiguration configuration;
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
+
 
     JwtService(@NonNull JwtConfiguration configuration) throws
             NoSuchAlgorithmException,
@@ -69,6 +68,12 @@ public final class JwtService {
         return generateJwt(username, authorities, Instant.now(), false);
     }
 
+    public String generateJwtFor(@NonNull final String username,
+                                 @NonNull final String[] authorities) {
+
+        return generateJwt(username, Arrays.asList(authorities), Instant.now(), false);
+    }
+
     public String generateRefreshJwtFor(@NonNull final String username,
                                         @NonNull final List<String> authorities) {
         return generateJwt(username, authorities, Instant.now(), true);
@@ -91,7 +96,7 @@ public final class JwtService {
                 .setIssuedAt(Date.from(issuedAt))
                 .setExpiration(Date.from(expiredAt))
                 .setSubject(username)
-                .addClaims(Map.of("authorities", authorities))
+                .addClaims(Map.of(USER_AUTHORITIES, authorities))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }
