@@ -32,9 +32,6 @@ class TokenJpaRepositoryTest {
     @Autowired
     private TokenJpaRepository repository;
 
-    @Autowired
-    private EntityManager entityManager;
-
     @Test
     void should_SaveNewTokenEntity() throws Exception {
 
