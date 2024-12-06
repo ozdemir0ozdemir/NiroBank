@@ -2,6 +2,14 @@
 spring-boot = "3.3.0"
 spring-dependency-management = "1.1.6"
 test-logger = "4.0.0"
+jwt-version = "0.11.5"
+openfeign = "4.1.2"
+
+[libraries]
+jjwt-api = {group = "io.jsonwebtoken", name = "jjwt-api", version.ref = "jwt-version" }
+jjwt-impl = {group = "io.jsonwebtoken", name = "jjwt-impl", version.ref = "jwt-version" }
+jjwt-jackson = {group = "io.jsonwebtoken", name = "jjwt-jackson", version.ref = "jwt-version" }
+openfeign = {group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version.ref = "openfeign"}
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
