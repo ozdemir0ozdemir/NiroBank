@@ -11,16 +11,10 @@ record TokenController() {
 
     @PostMapping
     void login(@RequestBody CreateToken request) {
-        // If user has a refresh token already then revoke it
-
-        // Generate Access and Refresh Token
-        // Store refresh token in postgres
-        // Return access token and refresh token id to the client
     }
 
     @GetMapping("/refresh")
     void refreshAccessToken(@RequestBody RefreshToken request) {
-
     }
 
     @GetMapping
@@ -35,17 +29,14 @@ record TokenController() {
 
     @GetMapping("/{tokenId}")
     void getTokenByTokenId(@PathVariable String tokenId) {
-
     }
 
     @PostMapping("/{tokenId}")
     void revokeTokenByTokenId(@PathVariable String tokenId) {
-
     }
 
     @DeleteMapping("/{tokenId}")
     void deleteTokenByTokenId(@PathVariable String tokenId) {
-
     }
 
 

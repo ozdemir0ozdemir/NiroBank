@@ -79,6 +79,11 @@ public class TokenService {
                 .map(this::entityToToken);
     }
 
+    public Page<Token> findAllExpiredTokensByTokenStatus(TokenStatus status, int pageNumber, int pageSize) {
+        return this.repository.findAllExpiredTokensByTokenStatus(status, PageRequest.of(pageNumber, pageSize))
+                .map(this::entityToToken);
+    }
+
     public Page<Token> findAllByUsername(String username, int pageNumber, int pageSize) {
         return this.repository.findAllByUsername(username, PageRequest.of(pageNumber, pageSize))
                 .map(this::entityToToken);
