@@ -1,0 +1,9 @@
+[versions]
+spring-boot = "3.3.0"
+spring-dependency-management = "1.1.6"
+test-logger = "4.0.0"
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+test-logger = { id = "com.adarshr.test-logger", version.ref = "test-logger" }
