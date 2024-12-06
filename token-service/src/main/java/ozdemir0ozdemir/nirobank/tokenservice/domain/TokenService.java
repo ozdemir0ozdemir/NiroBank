@@ -8,5 +8,6 @@ import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 @RequiredArgsConstructor
 public class TokenService {
 
+    private final TokenJpaRepository repository;
     private final JwtService jwtService;
 }

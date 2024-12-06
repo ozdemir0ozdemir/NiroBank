@@ -18,12 +18,24 @@ class TokenEntity {
     @Id
     @SequenceGenerator(name = "tokens_id_gen", sequenceName = "tokens_id_seq", allocationSize = 1)
     @GeneratedValue(generator = "tokens_id_gen", strategy = GenerationType.SEQUENCE)
+    @Column(name = "id")
     private long id;
+
+    @Column(name = "token_id", nullable = false)
     private String tokenId;
+
+    @Column(name = "username", nullable = false)
     private String username;
+
+    @Column(name = "token", nullable = false)
     private String token;
+
+    @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
-    private TokenStatus tokenStatus;
+
+    @Column(name = "token_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TokenStatus tokenStatus = TokenStatus.ACCEPTABLE;
 
     static TokenEntity of(String username, String token, Instant expiresAt) {
         return new TokenEntity()

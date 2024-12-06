@@ -19,6 +19,24 @@ services:
       retries: 3
       start_period: 15s
 
+  token_service_db:
+    image: postgres:16-alpine
+    container_name: token_service_db
+    ports:
+      - "25432:5432"
+    environment:
+      - "POSTGRES_USER=token_service_username"
+      - "POSTGRES_PASSWORD=token_service_password"
+      - "POSTGRES_DB=token_service_db"
+      - "PGUSER=token_service_username"
+      - "PGDATABASE=token_service_db"
+    healthcheck:
+      test: "pg_isready -U token_service_username -d token_service_db"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 
 #  auth-cache:
 #    image: redis:alpine
