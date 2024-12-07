@@ -1,6 +1,5 @@
 package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

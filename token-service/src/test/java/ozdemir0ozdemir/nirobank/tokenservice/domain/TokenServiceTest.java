@@ -8,8 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ozdemir0ozdemir.nirobank.tokenservice.config.JwtConfiguration;
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +53,7 @@ class TokenServiceTest {
 
         assertThat(accessTokenClaims.get(JwtService.USER_AUTHORITIES, List.class))
                 .contains("AUTHORITY_1", "AUTHORITY_2");
-        assertThat(accessTokenClaims.getExpiration()).isAfter(Instant.now());
+        assertThat(accessTokenClaims.getExpiration()).isAfter(new Date());
     }
 
     @Test
