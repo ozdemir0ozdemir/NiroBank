@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+    alias libs.plugins.spring.boot
+    alias libs.plugins.spring.dependency.management
+}
+
+group = 'ozdemir0ozdemir'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation libs.openfeign
+    implementation project(':common-module')
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+
+        showExceptions true
+        exceptionFormat "full"
+        showCauses true
+        showStackTraces true
+
+        // Change to `true` for more verbose test output
+        showStandardStreams = false
+    }
+}

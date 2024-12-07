@@ -100,5 +100,4 @@ record TokenController(TokenService service) {
         return ResponseEntity.noContent().build();
     }
 
-
 }
