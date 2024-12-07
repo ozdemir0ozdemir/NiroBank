@@ -51,30 +51,30 @@ public class PagedResponse<T> {
 
 
     // Static Factories
-    public static <T> PagedResponse<T> succeeded(Page<T> userPage, String message) {
-        return PagedResponse.of(userPage, Instant.now(), ResponseStatus.SUCCEEDED, message);
+    public static <T> PagedResponse<T> succeeded(Page<T> page, String message) {
+        return PagedResponse.of(page, Instant.now(), ResponseStatus.SUCCEEDED, message);
     }
 
-    public static <T> PagedResponse<T> failed(Page<T> userPage, String message) {
-        return PagedResponse.of(userPage, Instant.now(), ResponseStatus.FAILED, message);
+    public static <T> PagedResponse<T> failed(Page<T> page, String message) {
+        return PagedResponse.of(page, Instant.now(), ResponseStatus.FAILED, message);
     }
 
-    public static <T> PagedResponse<T> of(Page<T> userPage, ResponseStatus status, String message) {
-        return PagedResponse.of(userPage, Instant.now(), status, message);
+    public static <T> PagedResponse<T> of(Page<T> page, ResponseStatus status, String message) {
+        return PagedResponse.of(page, Instant.now(), status, message);
     }
 
-    public static <T> PagedResponse<T> of(Page<T> userPage, Instant respondAt, ResponseStatus status, String message) {
+    public static <T> PagedResponse<T> of(Page<T> page, Instant respondAt, ResponseStatus status, String message) {
         return new PagedResponse<>(
-                userPage.getContent(),
+                page.getContent(),
                 respondAt,
                 status,
                 message,
-                userPage.getNumber() + 1,
-                userPage.getTotalPages(),
-                userPage.getSize(),
-                userPage.getTotalElements(),
-                userPage.hasPrevious(),
-                userPage.hasNext()
+                page.getNumber() + 1,
+                page.getTotalPages(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.hasPrevious(),
+                page.hasNext()
         );
     }
 

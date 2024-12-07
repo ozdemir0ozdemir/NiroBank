@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenNotFoundException;
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class TokenService {
     public AccessToken refreshToken(String tokenId) {
         Optional<TokenEntity> optionalToken = this.repository.findByTokenId(tokenId);
         if(optionalToken.isEmpty()){
-           throw new RuntimeException("Refresh token not found"); // FIXME: Throw proper exception
+           throw new TokenNotFoundException("Refresh token not found");
         }
 
         // If refresh token exists then generate access token from it
@@ -57,21 +58,21 @@ public class TokenService {
 
         String accessToken = this.jwtService.generateJwtFor(
                 tokenClaims.getSubject(),
-                tokenClaims.get(JwtService.USER_AUTHORITIES, String[].class));
+                tokenClaims.get(JwtService.USER_AUTHORITIES, List.class));
 
         return buildAccessTokenResult(accessToken, tokenClaims.getId());
     }
 
-    // TODO: throw an exception if any token not found
-    public Optional<Token> findByTokenId(String tokenId) {
+    public Token findByTokenId(String tokenId) {
         return this.repository.findByTokenId(tokenId)
-                .map(this::entityToToken);
+                .map(this::entityToToken)
+                .orElseThrow(() -> new TokenNotFoundException("Token not found for id: " + tokenId));
     }
 
-    // TODO: throw an exception if any token not found
-    public Optional<Token> findByUsername(String username) {
+    public Token findByUsername(String username) {
         return this.repository.findByUsername(username)
-                .map(this::entityToToken);
+                .map(this::entityToToken)
+                .orElseThrow(() -> new TokenNotFoundException("Token not found for username: " + username));
     }
 
     public Page<Token> findAll(int pageNumber, int pageSize) {

@@ -67,12 +67,6 @@ public final class JwtService {
         return generateJwt(username, authorities, new Date(), false);
     }
 
-    public String generateJwtFor(@NonNull final String username,
-                                 @NonNull final String[] authorities) {
-
-        return generateJwt(username, Arrays.asList(authorities), new Date(), false);
-    }
-
     public String generateRefreshJwtFor(@NonNull final String username,
                                         @NonNull final List<String> authorities) {
         return generateJwt(username, authorities, new Date(), true);
