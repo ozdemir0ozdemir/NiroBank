@@ -1,7 +1,6 @@
 package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.TokenNotFoundException;
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,10 +55,6 @@ public class TokenService {
 
         // If refresh token exists then generate access token from it
         Claims tokenClaims = this.jwtService.getClaimsFrom(optionalToken.get().getToken());
-        if(tokenClaims.getExpiration().before(new Date())) {
-            System.out.println("EXPIRED TOOOOOOOOOOOOOKEEEEEEEEEEEEEEEEEEEEEEEEEEN");
-            throw new RuntimeException("Token expired");
-        }
 
         String accessToken = this.jwtService.generateJwtFor(
                 tokenClaims.getSubject(),
