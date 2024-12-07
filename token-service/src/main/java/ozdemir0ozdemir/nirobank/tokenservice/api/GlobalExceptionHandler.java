@@ -1,5 +1,6 @@
 package ozdemir0ozdemir.nirobank.tokenservice.api;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,4 +17,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Response<?> response = Response.failed(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+
 }

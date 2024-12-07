@@ -72,12 +72,12 @@ public final class JwtService {
         return generateJwt(username, authorities, new Date(), true);
     }
 
-    String generateJwt(@NonNull final String username,
+    public String generateJwt(@NonNull final String username,
                        @NonNull final List<String> authorities,
                        @NonNull final Date issuedAt,
                        boolean isRefreshToken) {
 
-        long issuedAtEpoch = issuedAt.getTime();
+        long issuedAtTime  = issuedAt.getTime();
         long expiresAmount = isRefreshToken ? configuration.getRefreshExpiresAtMillis() : configuration.getExpiresAtMillis();
 
 
@@ -87,7 +87,7 @@ public final class JwtService {
                 .setIssuer(this.configuration.getIssuer())
                 .setAudience(this.configuration.getAudience())
                 .setIssuedAt(issuedAt)
-                .setExpiration(new Date(issuedAtEpoch + expiresAmount))
+                .setExpiration(new Date(issuedAtTime + expiresAmount))
                 .setSubject(username)
                 .addClaims(Map.of(USER_AUTHORITIES, authorities))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
