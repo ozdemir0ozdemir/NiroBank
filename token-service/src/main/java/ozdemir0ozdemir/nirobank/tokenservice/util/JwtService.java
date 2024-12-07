@@ -15,6 +15,8 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.*;
 
 @Service
@@ -65,36 +67,36 @@ public final class JwtService {
     public String generateJwtFor(@NonNull final String username,
                                  @NonNull final List<String> authorities) {
 
-        return generateJwt(username, authorities, Instant.now(), false);
+        return generateJwt(username, authorities, new Date(), false);
     }
 
     public String generateJwtFor(@NonNull final String username,
                                  @NonNull final String[] authorities) {
 
-        return generateJwt(username, Arrays.asList(authorities), Instant.now(), false);
+        return generateJwt(username, Arrays.asList(authorities), new Date(), false);
     }
 
     public String generateRefreshJwtFor(@NonNull final String username,
                                         @NonNull final List<String> authorities) {
-        return generateJwt(username, authorities, Instant.now(), true);
+        return generateJwt(username, authorities, new Date(), true);
     }
 
     String generateJwt(@NonNull final String username,
                        @NonNull final List<String> authorities,
-                       @NonNull final Instant issuedAt,
+                       @NonNull final Date issuedAt,
                        boolean isRefreshToken) {
 
-        Instant expiredAt = issuedAt.plus(
-                isRefreshToken ? configuration.getRefreshExpiredAtAmount() : configuration.getExpiredAtAmount(),
-                isRefreshToken ? configuration.getRefreshExpiredAtUnit() : configuration.getExpiredAtUnit());
+        long issuedAtEpoch = issuedAt.getTime();
+        long expiresAmount = isRefreshToken ? configuration.getRefreshExpiresAtMillis() : configuration.getExpiresAtMillis();
+
 
         return Jwts
                 .builder()
                 .setId(username + ":" + UUID.randomUUID())
                 .setIssuer(this.configuration.getIssuer())
                 .setAudience(this.configuration.getAudience())
-                .setIssuedAt(Date.from(issuedAt))
-                .setExpiration(Date.from(expiredAt))
+                .setIssuedAt(issuedAt)
+                .setExpiration(new Date(issuedAtEpoch + expiresAmount))
                 .setSubject(username)
                 .addClaims(Map.of(USER_AUTHORITIES, authorities))
                 .signWith(privateKey, SignatureAlgorithm.RS256)

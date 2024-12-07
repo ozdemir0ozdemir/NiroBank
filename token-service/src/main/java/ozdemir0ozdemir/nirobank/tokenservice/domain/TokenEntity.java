@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -37,13 +35,13 @@ class TokenEntity {
 
     @Column(name = "expires_at", nullable = false)
     @Temporal(value = TemporalType.TIMESTAMP)
-    private LocalDateTime expiresAt;
+    private Date expiresAt;
 
     @Column(name = "token_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private TokenStatus tokenStatus = TokenStatus.ACCEPTABLE;
 
-    static TokenEntity of(String username, String token, LocalDateTime expiresAt) {
+    static TokenEntity of(String username, String token, Date expiresAt) {
         return new TokenEntity()
                 .setTokenId(username + ":" + UUID.randomUUID())
                 .setUsername(username)

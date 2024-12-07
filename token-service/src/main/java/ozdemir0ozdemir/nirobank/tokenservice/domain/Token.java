@@ -1,9 +1,9 @@
 package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public record Token(String tokenId,
                     String Token,
                     String username,
-                    LocalDateTime expiresAt,
+                    Date expiresAt,
                     TokenStatus tokenStatus) {}

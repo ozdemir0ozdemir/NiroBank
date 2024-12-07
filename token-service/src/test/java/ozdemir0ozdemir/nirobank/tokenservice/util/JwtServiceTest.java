@@ -43,14 +43,12 @@ class JwtServiceTest {
                 .thenReturn("NiroBank-Api");
         when(configuration.getIssuer())
                 .thenReturn("NiroBank-AuthService");
-        when(configuration.getExpiredAtAmount())
-                .thenReturn(30L);
-        when(configuration.getExpiredAtUnit())
-                .thenReturn(ChronoUnit.MINUTES);
-        when(configuration.getRefreshExpiredAtAmount())
-                .thenReturn(30L);
-        when(configuration.getRefreshExpiredAtUnit())
-                .thenReturn(ChronoUnit.DAYS);
+        when(configuration.getExpiresAtMillis())
+                .thenReturn(30 * 60 * 1000L);
+
+        when(configuration.getRefreshExpiresAtMillis())
+                .thenReturn(30 * 24 * 60 * 60 * 1000L);
+
 
         jwtService = new JwtService(configuration);
     }
@@ -98,7 +96,7 @@ class JwtServiceTest {
         String token = jwtService.generateJwt(
                 "USER",
                 List.of("USER", "ADMIN"),
-                Instant.now().minus(35L, ChronoUnit.MINUTES),
+                new Date(System.currentTimeMillis() - (31 * 60 * 1000)),
                 false);
 
         assertThatThrownBy(() -> jwtService.getClaimsFrom(token))
@@ -180,7 +178,7 @@ class JwtServiceTest {
                 .generateJwt(
                         "USER",
                         List.of("USER", "ADMIN"),
-                        Instant.now().minus(31L, ChronoUnit.MINUTES),
+                        new Date(System.currentTimeMillis() - (31 * 60 * 1000)),
                         false);
 
         assertThat(jwtService.isJwtExpired(token))

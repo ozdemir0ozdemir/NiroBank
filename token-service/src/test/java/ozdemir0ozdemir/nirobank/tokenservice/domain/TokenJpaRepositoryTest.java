@@ -15,6 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +66,7 @@ class TokenJpaRepositoryTest {
         assertThat(tokens.getTotalElements()).isEqualTo(10);
 
         LocalDateTime now = LocalDateTime.now();
-        tokens.forEach(entity -> assertThat(entity.getExpiresAt().isBefore(now)).isTrue() );
+        tokens.forEach(entity -> assertThat(entity.getExpiresAt().before(new Date())).isTrue() );
     }
 
     @Test
@@ -94,11 +95,11 @@ class TokenJpaRepositoryTest {
 
 
 
-    private static LocalDateTime nowPlusMinutes(Long minutes) {
-        return LocalDateTime.now().plus(minutes, ChronoUnit.MINUTES);
+    private static Date nowPlusMinutes(long minutes) {
+        return new Date(System.currentTimeMillis() + (minutes * 60 * 1000));
     }
 
-    private static LocalDateTime nowMinusMinutes(Long minutes) {
-        return LocalDateTime.now().minus(minutes, ChronoUnit.MINUTES);
+    private static Date nowMinusMinutes(long minutes) {
+        return new Date(System.currentTimeMillis() - (minutes * 60 * 1000));
     }
 }

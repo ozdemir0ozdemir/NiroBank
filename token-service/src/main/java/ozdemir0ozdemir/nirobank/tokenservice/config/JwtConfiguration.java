@@ -24,10 +24,8 @@ public final class JwtConfiguration {
 
     private PKCS8EncodedKeySpec privateKeySpec;
     private X509EncodedKeySpec publicKeySpec;
-    private ChronoUnit expiredAtUnit;
-    private Long expiredAtAmount;
-    private ChronoUnit refreshExpiredAtUnit;
-    private Long refreshExpiredAtAmount;
+    private Long expiresAtMillis;
+    private Long refreshExpiresAtMillis;
     private String issuer;
     private String audience;
 

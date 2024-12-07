@@ -10,6 +10,7 @@ import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +49,7 @@ class TokenServiceTest {
         assertThat(accessToken.refreshTokenId()).isNotBlank();
         assertThat(accessToken.username()).isEqualTo("spring");
         assertThat(accessToken.tokenStatus()).isEqualTo(TokenStatus.ACCEPTABLE);
-        assertThat(accessToken.expiresAt()).isAfter(LocalDateTime.now());
+        assertThat(accessToken.expiresAt()).isAfter(new Date());
 
         Claims accessTokenClaims = this.jwtService.getClaimsFrom(accessToken.accessToken());
 
@@ -69,7 +70,7 @@ class TokenServiceTest {
                 .setTokenId(tokenId)
                 .setTokenStatus(TokenStatus.ACCEPTABLE)
                 .setUsername("spring")
-                .setExpiresAt(LocalDateTime.now().plusMinutes(10L));
+                .setExpiresAt(new Date(System.currentTimeMillis() + (10L * 60 * 1000L)));
 
         when(repository.findByUsername("spring"))
                 .thenReturn(Optional.of(oldToken));
