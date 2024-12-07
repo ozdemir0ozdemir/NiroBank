@@ -1,7 +1,6 @@
 package ozdemir0ozdemir.nirobank.client.userclient;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ozdemir0ozdemir.common.response.PagedResponse;
 import ozdemir0ozdemir.common.response.Response;
