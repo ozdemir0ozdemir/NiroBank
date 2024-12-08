@@ -19,9 +19,9 @@ public class AuthService {
     private final UserClient userClient;
     private final TokenClient tokenClient;
 
-    public AccessToken login(String username, String password) {
+    public AccessToken login(Login request) {
         Response<User> userResponse =
-                this.userClient.login(new Login(username, password));
+                this.userClient.login(request);
 
         if(userResponse.getStatus().equals(ResponseStatus.FAILED)){
             throw new RuntimeException(userResponse.getMessage()); // TODO: UserNotFoundException
@@ -39,6 +39,8 @@ public class AuthService {
     }
 
     public void register(String username, String password) {
+        // TODO: Send request to the message broker instead of sending directly
+        // TODO: Send activation code to users email (User model has no email field yet)
         this.userClient.registerUser(new RegisterUser(username, password));
     }
 }
