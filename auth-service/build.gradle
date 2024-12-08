@@ -19,11 +19,15 @@ java {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
     implementation libs.openfeign
 
     implementation project(':common-module')
-    implementation project(':user-service')
-    implementation project(':token-service')
+    implementation project(':user-client')
+    implementation project(':token-client')
 
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
