@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ozdemir0ozdemir.common.response.PagedResponse;
 import ozdemir0ozdemir.common.response.Response;
+import ozdemir0ozdemir.common.user.Role;
 import ozdemir0ozdemir.nirobank.client.userclient.request.ChangeUserPassword;
 import ozdemir0ozdemir.nirobank.client.userclient.request.ChangeUserRole;
 import ozdemir0ozdemir.nirobank.client.userclient.request.Login;

@@ -2,8 +2,14 @@ package ozdemir0zdemir.authservice.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ozdemir0ozdemir.common.response.Response;
+import ozdemir0ozdemir.common.response.ResponseStatus;
+import ozdemir0ozdemir.nirobank.client.tokenclient.AccessToken;
 import ozdemir0ozdemir.nirobank.client.tokenclient.TokenClient;
+import ozdemir0ozdemir.nirobank.client.tokenclient.request.CreateToken;
+import ozdemir0ozdemir.nirobank.client.userclient.User;
 import ozdemir0ozdemir.nirobank.client.userclient.UserClient;
+import ozdemir0ozdemir.nirobank.client.userclient.request.Login;
 import ozdemir0ozdemir.nirobank.client.userclient.request.RegisterUser;
 
 @Service
@@ -13,7 +19,26 @@ public class AuthService {
     private final UserClient userClient;
     private final TokenClient tokenClient;
 
+    public AccessToken login(String username, String password) {
+        Response<User> userResponse =
+                this.userClient.login(new Login(username, password));
+
+        if(userResponse.getStatus().equals(ResponseStatus.FAILED)){
+            throw new RuntimeException(userResponse.getMessage()); // TODO: UserNotFoundException
+        }
+
+        User user = userResponse.getPayload();
+        Response<AccessToken> accessTokenResponse =
+                this.tokenClient.createToken(new CreateToken(user.username(), user.role()));
+
+        if(accessTokenResponse.getStatus().equals(ResponseStatus.FAILED)){
+            throw new RuntimeException(accessTokenResponse.getMessage()); // TODO: TokenException
+        }
+
+        return accessTokenResponse.getPayload();
+    }
+
     public void register(String username, String password) {
-        userClient.registerUser(new RegisterUser(username, password));
+        this.userClient.registerUser(new RegisterUser(username, password));
     }
 }

@@ -1,4 +1,4 @@
-package ozdemir0ozdemir.nirobank.client.userclient;
+package ozdemir0ozdemir.common.user;
 
 import java.util.List;
 
