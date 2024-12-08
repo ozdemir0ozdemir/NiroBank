@@ -11,6 +11,7 @@ import ozdemir0ozdemir.userservice.domain.User;
 import ozdemir0ozdemir.userservice.domain.UserService;
 import ozdemir0ozdemir.userservice.request.ChangeUserPassword;
 import ozdemir0ozdemir.userservice.request.ChangeUserRole;
+import ozdemir0ozdemir.userservice.request.Login;
 import ozdemir0ozdemir.userservice.request.RegisterUser;
 
 import java.net.URI;
@@ -58,6 +59,15 @@ record UserController(UserService userService) {
         }
 
         return ResponseEntity.ok(PagedResponse.succeeded(usersPage, "User(s) found"));
+    }
+
+
+    @GetMapping("/login")
+    ResponseEntity<Response<User>> login(@RequestBody Login request) {
+        return this.userService()
+                .findUserByUsernameAndPassword(request.username(), request.password())
+                .map(user -> ResponseEntity.ok(Response.succeeded(user, "User found")))
+                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found")));
     }
 
     @GetMapping("/{userId}")

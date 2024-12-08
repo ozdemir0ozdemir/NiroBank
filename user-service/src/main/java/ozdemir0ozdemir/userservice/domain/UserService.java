@@ -68,6 +68,12 @@ public class UserService {
                 .map(UserService::entityToUser);
     }
 
+    public Optional<User> findUserByUsernameAndPassword(String username, String password) {
+        return this.userRepository
+                .findByUsernameAndPassword(username, password)
+                .map(UserService::entityToUser);
+    }
+
     // Update Operations
     public void changeUserRoleByUsernameAndUserId(Role role, String username) {
         this.userRepository
