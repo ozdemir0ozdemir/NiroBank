@@ -26,7 +26,7 @@ public class AuthService {
         Response<User> userResponse =
                 this.userClient.login(request);
 
-        if(userResponse.getStatus().equals(ResponseStatus.FAILED)){
+        if (userResponse.getStatus().equals(ResponseStatus.FAILED)) {
             throw new UserNotFoundException(userResponse.getMessage());
         }
 
@@ -34,18 +34,17 @@ public class AuthService {
         Response<AccessToken> accessTokenResponse =
                 this.tokenClient.createToken(new CreateToken(user.username(), user.role()));
 
-        if(accessTokenResponse.getStatus().equals(ResponseStatus.FAILED)){
+        if (accessTokenResponse.getStatus().equals(ResponseStatus.FAILED)) {
             throw new TokenException(accessTokenResponse.getMessage());
         }
 
         return accessTokenResponse.getPayload();
     }
 
-    public void register(String username, String password) {
+    public Response<Void> register(String username, String password) {
         // TODO: Send request to the message broker instead of sending directly
         // TODO: Send activation code to users email (User model has no email field yet)
-        // TODO: Send Response from user-service
-        this.userClient.registerUser(new RegisterUser(username, password));
+        return this.userClient.registerUser(new RegisterUser(username, password));
     }
 
     public AccessToken refresh(String refreshTokenId) {
@@ -56,7 +55,7 @@ public class AuthService {
         Response<AccessToken> accessTokenResponse =
                 this.tokenClient.refreshAccessToken(new RefreshToken(refreshTokenId));
 
-        if(accessTokenResponse.getStatus().equals(ResponseStatus.FAILED)){
+        if (accessTokenResponse.getStatus().equals(ResponseStatus.FAILED)) {
             throw new TokenException(accessTokenResponse.getMessage());
         }
 
