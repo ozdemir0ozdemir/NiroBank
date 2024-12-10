@@ -12,6 +12,8 @@ import ozdemir0ozdemir.nirobank.client.userclient.User;
 import ozdemir0ozdemir.nirobank.client.userclient.UserClient;
 import ozdemir0ozdemir.nirobank.client.userclient.request.Login;
 import ozdemir0ozdemir.nirobank.client.userclient.request.RegisterUser;
+import ozdemir0zdemir.authservice.exception.TokenException;
+import ozdemir0zdemir.authservice.exception.UserNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class AuthService {
                 this.userClient.login(request);
 
         if(userResponse.getStatus().equals(ResponseStatus.FAILED)){
-            throw new RuntimeException(userResponse.getMessage()); // TODO: UserNotFoundException
+            throw new UserNotFoundException(userResponse.getMessage());
         }
 
         User user = userResponse.getPayload();
@@ -33,7 +35,7 @@ public class AuthService {
                 this.tokenClient.createToken(new CreateToken(user.username(), user.role()));
 
         if(accessTokenResponse.getStatus().equals(ResponseStatus.FAILED)){
-            throw new RuntimeException(accessTokenResponse.getMessage()); // TODO: TokenException
+            throw new TokenException(accessTokenResponse.getMessage());
         }
 
         return accessTokenResponse.getPayload();
@@ -55,7 +57,7 @@ public class AuthService {
                 this.tokenClient.refreshAccessToken(new RefreshToken(refreshTokenId));
 
         if(accessTokenResponse.getStatus().equals(ResponseStatus.FAILED)){
-            throw new RuntimeException(accessTokenResponse.getMessage()); // FIXME: TokenException
+            throw new TokenException(accessTokenResponse.getMessage());
         }
 
         return accessTokenResponse.getPayload();
