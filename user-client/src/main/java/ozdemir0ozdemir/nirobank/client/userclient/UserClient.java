@@ -14,7 +14,7 @@ import ozdemir0ozdemir.nirobank.client.userclient.request.RegisterUser;
 public interface UserClient {
 
     @PostMapping
-    void registerUser(@RequestBody RegisterUser request);
+    Response<Void> registerUser(@RequestBody RegisterUser request);
 
     @GetMapping
     PagedResponse<User> getAllUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
