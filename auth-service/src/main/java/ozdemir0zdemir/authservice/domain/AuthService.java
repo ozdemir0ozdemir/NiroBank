@@ -42,13 +42,14 @@ public class AuthService {
     public void register(String username, String password) {
         // TODO: Send request to the message broker instead of sending directly
         // TODO: Send activation code to users email (User model has no email field yet)
+        // TODO: Send Response from user-service
         this.userClient.registerUser(new RegisterUser(username, password));
     }
 
     public AccessToken refresh(String refreshTokenId) {
 
         // TODO: parse token, get username and roles to validate user
-        // TODO: send validation request via user-client
+        // TODO: send validation request to the user-service
 
         Response<AccessToken> accessTokenResponse =
                 this.tokenClient.refreshAccessToken(new RefreshToken(refreshTokenId));
