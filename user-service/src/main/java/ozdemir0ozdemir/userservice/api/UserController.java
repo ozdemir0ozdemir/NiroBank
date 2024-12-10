@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 record UserController(UserService userService) {
 
     @PostMapping
-    ResponseEntity<Void> registerUser(@RequestBody RegisterUser request) {
+    ResponseEntity<Response<Void>> registerUser(@RequestBody RegisterUser request) {
         this.userService.saveUser(request.username(), request.password());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -31,7 +31,7 @@ record UserController(UserService userService) {
                 .buildAndExpand(request.username())
                 .toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(Response.succeeded("User saved successfully"));
     }
 
     @GetMapping
