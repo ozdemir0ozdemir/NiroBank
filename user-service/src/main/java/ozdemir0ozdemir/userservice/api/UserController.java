@@ -85,12 +85,12 @@ record UserController(UserService userService) {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping
-    ResponseEntity<Void> changeUserPassword(@RequestBody ChangeUserPassword request) {
-
-        this.userService.changeUserPassword(request.username(), request.password());
-        return ResponseEntity.noContent().build();
-    }
+//    @PatchMapping
+//    ResponseEntity<Void> changeUserPassword(@RequestBody ChangeUserPassword request) {
+//
+//        this.userService.changeUserPassword(request.username(), request.password());
+//        return ResponseEntity.noContent().build();
+//    }
 
     @DeleteMapping("/{userId}")
     ResponseEntity<Void> deleteUserByUserId(@PathVariable Long userId) {
