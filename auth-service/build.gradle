@@ -25,11 +25,16 @@ dependencies {
 
     implementation libs.openfeign
 
+    implementation libs.jjwt.getApi()
+    implementation libs.jjwt.getImpl()
+    implementation libs.jjwt.getJackson()
+
     implementation project(':common-module')
     implementation project(':user-client')
     implementation project(':token-client')
 
 
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

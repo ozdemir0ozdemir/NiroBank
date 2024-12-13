@@ -19,6 +19,13 @@ repositories {
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.0'
     implementation 'org.springframework.data:spring-data-commons:3.3.0'
+    implementation 'org.springframework:spring-context:6.1.14'
+    implementation 'org.springframework.boot:spring-boot:3.3.1'
+
+
+    implementation libs.jjwt.getApi()
+    implementation libs.jjwt.getImpl()
+    implementation libs.jjwt.getJackson()
 }
 
 
