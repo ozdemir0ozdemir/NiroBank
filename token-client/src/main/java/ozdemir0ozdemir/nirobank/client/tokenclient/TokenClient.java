@@ -14,7 +14,7 @@ public interface TokenClient {
     @PostMapping
     Response<AccessToken> createToken(@RequestBody CreateToken request);
 
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     Response<AccessToken> refreshAccessToken(@RequestBody RefreshToken request);
 
     @GetMapping

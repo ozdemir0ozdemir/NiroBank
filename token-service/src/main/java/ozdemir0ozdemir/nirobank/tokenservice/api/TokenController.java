@@ -1,5 +1,7 @@
 package ozdemir0ozdemir.nirobank.tokenservice.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ import java.net.URI;
 @RequestMapping("/api/v1/tokens")
 record TokenController(TokenService service) {
 
+    private static final Logger log = LoggerFactory.getLogger(TokenController.class);
+
     @PostMapping
     ResponseEntity<Response<AccessToken>> createToken(@RequestBody CreateToken request) {
         AccessToken accessToken = this.service
@@ -34,8 +38,9 @@ record TokenController(TokenService service) {
                 .body(Response.succeeded(accessToken, "Tokens successfully created"));
     }
 
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     ResponseEntity<Response<AccessToken>> refreshAccessToken(@RequestBody RefreshToken request) {
+        log.info("Access token refreshed requested : {}", request.tokenId());
         AccessToken accessToken = this.service.refreshToken(request.tokenId());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -43,6 +48,8 @@ record TokenController(TokenService service) {
                 .buildAndExpand(accessToken.refreshTokenId())
                 .toUri();
 
+        log.info("Access token refreshed for : {}", request.tokenId());
+        log.info("Access token  : {}", accessToken.username());
         return ResponseEntity
                 .created(location)
                 .body(Response.succeeded(accessToken, "Tokens successfully refreshed"));
@@ -85,13 +92,13 @@ record TokenController(TokenService service) {
         return ResponseEntity.ok(Response.succeeded(token, "Token found"));
     }
 
-    @PostMapping("/{tokenId}")
-    ResponseEntity<Void> revokeTokenByTokenId(@PathVariable String tokenId) {
-        this.service.revokeTokenByTokenId(tokenId);
-
-        return ResponseEntity.noContent().build();
-
-    }
+//    @PostMapping("/{tokenId}")
+//    ResponseEntity<Void> revokeTokenByTokenId(@PathVariable String tokenId) {
+//        this.service.revokeTokenByTokenId(tokenId);
+//
+//        return ResponseEntity.noContent().build();
+//
+//    }
 
     @DeleteMapping("/{tokenId}")
     ResponseEntity<Void> deleteTokenByTokenId(@PathVariable String tokenId) {

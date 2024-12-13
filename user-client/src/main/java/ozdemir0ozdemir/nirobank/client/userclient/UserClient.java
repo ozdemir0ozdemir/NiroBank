@@ -25,7 +25,7 @@ public interface UserClient {
     @GetMapping("/{userId}")
     Response<User> getUserByUserId(@PathVariable Long userId);
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     Response<User> login(@RequestBody Login request);
 
     @PatchMapping

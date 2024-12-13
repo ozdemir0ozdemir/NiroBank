@@ -1,5 +1,7 @@
 package ozdemir0ozdemir.userservice.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("/api/v1/users")
 record UserController(UserService userService) {
+
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping
     ResponseEntity<Response<Void>> registerUser(@RequestBody RegisterUser request) {
@@ -62,7 +66,8 @@ record UserController(UserService userService) {
     }
 
 
-    @GetMapping("/login")
+
+    @PostMapping("/login")
     ResponseEntity<Response<User>> login(@RequestBody Login request) {
         return this.userService()
                 .findUserByUsernameAndPassword(request.username(), request.password())

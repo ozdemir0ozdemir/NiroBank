@@ -69,9 +69,15 @@ public class UserService {
     }
 
     public Optional<User> findUserByUsernameAndPassword(String username, String password) {
-        return this.userRepository
-                .findByUsernameAndPassword(username, password)
-                .map(UserService::entityToUser);
+        Optional<UserEntity> entity = this.userRepository
+                .findByUsername(username, PageRequest.of(0, 1))
+                .stream()
+                .findFirst();
+
+        if(entity.isPresent() &&  passwordEncoder.matches(password, entity.get().getPassword())){
+           return entity.map(UserService::entityToUser);
+        }
+        return Optional.empty();
     }
 
     // Update Operations

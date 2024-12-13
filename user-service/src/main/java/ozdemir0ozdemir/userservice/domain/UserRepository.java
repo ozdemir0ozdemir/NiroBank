@@ -18,6 +18,8 @@ interface UserRepository extends PagingAndSortingRepository<UserEntity, Long> {
     Page<UserEntity> findAll(PageRequest pageRequest);
 
     Optional<UserEntity> findById(Long id);
+
+    @Query("from UserEntity u where u.username = :username and u.password = :password")
     Optional<UserEntity> findByUsernameAndPassword(String username, String password);
     Page<UserEntity> findByUsername(String username, PageRequest pageRequest);
     Page<UserEntity> findByRole(Role role, Pageable pageable);
