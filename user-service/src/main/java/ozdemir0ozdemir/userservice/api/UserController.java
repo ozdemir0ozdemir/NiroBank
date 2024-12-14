@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -78,12 +79,12 @@ record UserController(UserService userService) {
     }
 
     @DeleteMapping("/{userId}")
-    ResponseEntity<Void> deleteUserByUserId(@PathVariable Long userId) {
+    ResponseEntity<Response<Void>> deleteUserByUserId(@PathVariable Long userId) {
         boolean succeeded = this.userService.deleteUserByUserId(userId);
         if (succeeded) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Response.succeeded("User deleted"));
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found"));
     }
 
     // ACTIONS
@@ -97,26 +98,22 @@ record UserController(UserService userService) {
     }
 
     @PatchMapping("/{userId}/change-role")
-    ResponseEntity<Void> changeUserRoleByUserId(@PathVariable Long userId, @RequestBody ChangeUserRole request) {
-
+    ResponseEntity<Response<Void>> changeUserRoleByUserId(@PathVariable Long userId, @RequestBody ChangeUserRole request) {
         boolean succeeded = this.userService
                 .changeUserRoleByUsernameAndUserId(userId, request.role(), request.username());
-
         if (succeeded) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Response.succeeded("User deleted"));
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found"));
     }
 
     @PatchMapping("/{userId}/change-password")
-    ResponseEntity<Void> changeUserPassword(@PathVariable Long userId, @RequestBody ChangeUserPassword request) {
-
+    ResponseEntity<Response<Void>> changeUserPassword(@PathVariable Long userId, @RequestBody ChangeUserPassword request) {
         boolean succeeded = this.userService
                 .changeUserPassword(userId, request.username(), request.password());
-
         if (succeeded) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Response.succeeded("User deleted"));
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found"));
     }
 }

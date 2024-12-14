@@ -1,25 +1,27 @@
+truncate table users;
 alter sequence users_id_sequence restart with 1;
 
-insert into users (username, password, role)
+
+insert into users (user_id, username, password, role)
 values
-    ('Starlight123', 'Twinkle@2024', 'USER'),
-    ('NeonNinja', 'Shadow#123', 'USER'),
-    ('PixelPioneer', 'Matrix$567', 'USER'),
-    ('MysticMage', 'SpellCaster%2024', 'USER'),
-    ('EchoPhoenix', 'Rebirth@Dawn', 'USER'),
-    ('NebulaKnight', 'Space&Time', 'USER'),
-    ('AetherArtist', 'Creative*Flow', 'USER'),
-    ('CosmicDreamer', 'Gal@xyPass1', 'ADMIN'),
-    ('QuantumLeap', 'Photon&Wave', 'ADMIN'),
-    ('GalacticHero', 'StarWars!2024', 'ADMIN'),
-    ('AuroraBorealis', 'Northern*Lights', 'ADMIN'),
-    ('VelocityViper', 'Speed$Strike', 'ADMIN'),
-    ('StormStriker', 'Thunder$Bolt', 'ADMIN'),
-    ('MoonWalker', 'Apollo!11', 'MANAGER'),
-    ('SolarFlare', 'Sunshine*99', 'MANAGER'),
-    ('EclipseMaster', 'Lunar#Eclipse', 'MANAGER'),
-    ('CyberSamurai', 'Blade&Shield', 'MANAGER'),
-    ('ZenithZero', 'Peak#Horizon', 'MANAGER'),
-    ('DigitalDragon', 'Cyber@Roar', 'MANAGER'),
-    ('NimbusNavigator', 'Cloud9#Sky', 'MANAGER');
+    (nextVal('users_id_sequence'), 'Starlight123', 'Twinkle@2024', 'USER'),
+    (nextVal('users_id_sequence'), 'NeonNinja', 'Shadow#123', 'USER'),
+    (nextVal('users_id_sequence'), 'PixelPioneer', 'Matrix$567', 'USER'),
+    (nextVal('users_id_sequence'), 'MysticMage', 'SpellCaster%2024', 'USER'),
+    (nextVal('users_id_sequence'), 'EchoPhoenix', 'Rebirth@Dawn', 'USER'),
+    (nextVal('users_id_sequence'), 'NebulaKnight', 'Space&Time', 'USER'),
+    (nextVal('users_id_sequence'), 'AetherArtist', 'Creative*Flow', 'USER'),
+    (nextVal('users_id_sequence'), 'CosmicDreamer', 'Gal@xyPass1', 'ADMIN'),
+    (nextVal('users_id_sequence'), 'QuantumLeap', 'Photon&Wave', 'ADMIN'),
+    (nextVal('users_id_sequence'), 'GalacticHero', 'StarWars!2024', 'ADMIN'),
+    (nextVal('users_id_sequence'), 'AuroraBorealis', 'Northern*Lights', 'ADMIN'),
+    (nextVal('users_id_sequence'), 'VelocityViper', 'Speed$Strike', 'ADMIN'),
+    (nextVal('users_id_sequence'), 'StormStriker', 'Thunder$Bolt', 'ADMIN'),
+    (nextVal('users_id_sequence'), 'MoonWalker', 'Apollo!11', 'MANAGER'),
+    (nextVal('users_id_sequence'), 'SolarFlare', 'Sunshine*99', 'MANAGER'),
+    (nextVal('users_id_sequence'), 'EclipseMaster', 'Lunar#Eclipse', 'MANAGER'),
+    (nextVal('users_id_sequence'), 'CyberSamurai', 'Blade&Shield', 'MANAGER'),
+    (nextVal('users_id_sequence'), 'ZenithZero', 'Peak#Horizon', 'MANAGER'),
+    (nextVal('users_id_sequence'), 'DigitalDragon', 'Cyber@Roar', 'MANAGER'),
+    (nextVal('users_id_sequence'), 'NimbusNavigator', 'Cloud9#Sky', 'MANAGER');
 

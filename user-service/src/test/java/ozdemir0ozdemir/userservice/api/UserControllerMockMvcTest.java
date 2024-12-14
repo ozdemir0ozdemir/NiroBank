@@ -69,8 +69,8 @@ class UserControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        @SuppressWarnings("unchecked")
-        Response<Void> userResponse = mapper.readValue(responseString, Response.class);
+        Response<Void> userResponse = mapper.readValue(responseString, new TypeReference<>() {
+        });
 
         assertThat(userResponse).isNotNull();
         assertThat(userResponse.getStatus()).isEqualTo(ResponseStatus.SUCCEEDED);
@@ -96,8 +96,8 @@ class UserControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        @SuppressWarnings("unchecked")
-        Response<Void> userResponse = mapper.readValue(responseString, Response.class);
+        Response<Void> userResponse = mapper.readValue(responseString, new TypeReference<>() {
+        });
 
         assertThat(userResponse).isNotNull();
         assertThat(userResponse.getStatus()).isEqualTo(ResponseStatus.FAILED);
