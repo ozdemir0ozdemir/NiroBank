@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ozdemir0ozdemir.common.user.Role;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.RefreshTokenExpiredException;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.RefreshTokenNotFoundException;
@@ -23,7 +24,7 @@ public class RefreshTokenService {
     private final JwtService jwtService;
     private final PageRequest mediumSizeFirstPage = PageRequest.of(0, 15);
 
-
+    @Transactional
     public AccessToken generateTokenFor(String username, Role role) {
 
         // Revoke old acceptable refresh tokens
@@ -41,7 +42,7 @@ public class RefreshTokenService {
         Claims accessTokenClaims = jwtService.getClaimsFrom(accessTokenString);
         Claims refreshTokenClaims = jwtService.getClaimsFrom(refreshTokenString);
 
-        Timestamp expiresAt = Timestamp.valueOf(now.toString());
+        Timestamp expiresAt = Timestamp.from(refreshTokenClaims.getExpiration().toInstant());
 
         // Save refresh token and return access token
         RefreshTokenEntity entity = repository.save(new RefreshTokenEntity()
@@ -65,7 +66,7 @@ public class RefreshTokenService {
         Optional<RefreshTokenEntity> optionalEntity =
                 repository.findByReferenceId(refreshTokenReferenceId);
 
-        if (optionalEntity.isEmpty()) {
+        if (optionalEntity.isEmpty() || optionalEntity.get().getRefreshTokenStatus().equals(RefreshTokenStatus.REVOKED)) {
             throw new RefreshTokenNotFoundException("Refresh token not found. Ref ID: " + refreshTokenReferenceId);
         }
 
@@ -85,7 +86,15 @@ public class RefreshTokenService {
                 now,
                 false);
 
-        return new AccessToken(refreshTokenReferenceId, optionalEntity.get().getUsername(), accessTokenString, Timestamp.valueOf(now.toString()));
+        Claims accessTokenClaims = jwtService.getClaimsFrom(accessTokenString);
+
+
+        // FIXME: BUG
+        return new AccessToken(
+                refreshTokenReferenceId,
+                accessTokenClaims.getSubject(),
+                accessTokenString,
+                Timestamp.from(accessTokenClaims.getExpiration().toInstant()));
     }
 
     public RefreshToken findRefreshTokenByReferenceId(String refreshTokenReferenceId) {
