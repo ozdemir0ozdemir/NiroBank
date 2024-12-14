@@ -12,7 +12,6 @@ import org.springframework.test.context.jdbc.Sql;
 import ozdemir0ozdemir.nirobank.tokenservice.WithPostgresContainer;
 
 import java.sql.Timestamp;
-import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +24,6 @@ class RefreshTokenRepositoryTest implements WithPostgresContainer {
     private RefreshTokenRepository repository;
 
     private RefreshTokenEntity VALID_TOKEN;
-    private final PageRequest smallSizedFirstPage = PageRequest.of(0, 5);
     private final PageRequest largeSizedFirstPage = PageRequest.of(0, 50);
     private final int TOTAL_ACCEPTABLE_REFRESH_TOKEN = 15;
     private final int TOTAL_REVOKED_REFRESH_TOKEN = 15;
@@ -33,7 +31,7 @@ class RefreshTokenRepositoryTest implements WithPostgresContainer {
 
     @BeforeEach
     void beforeEach() throws Exception {
-           VALID_TOKEN = new RefreshTokenEntity()
+        VALID_TOKEN = new RefreshTokenEntity()
                 .setReferenceId("ref_001")
                 .setUsername("Starlight123")
                 .setRefreshToken("token12345")
@@ -246,7 +244,7 @@ class RefreshTokenRepositoryTest implements WithPostgresContainer {
         page = repository.findAllByUsername(VALID_TOKEN.getUsername(), largeSizedFirstPage);
 
         //then
-        page.forEach(entity ->  assertThat(entity.getRefreshTokenStatus()).isEqualTo(RefreshTokenStatus.REVOKED));
+        page.forEach(entity -> assertThat(entity.getRefreshTokenStatus()).isEqualTo(RefreshTokenStatus.REVOKED));
         assertThat(affectedRow).isEqualTo(3);
 
         //when
@@ -254,7 +252,7 @@ class RefreshTokenRepositoryTest implements WithPostgresContainer {
         page = repository.findAllByUsername(VALID_TOKEN.getUsername(), largeSizedFirstPage);
 
         //then
-        page.forEach(entity ->  assertThat(entity.getRefreshTokenStatus()).isEqualTo(RefreshTokenStatus.ACCEPTABLE));
+        page.forEach(entity -> assertThat(entity.getRefreshTokenStatus()).isEqualTo(RefreshTokenStatus.ACCEPTABLE));
         assertThat(affectedRow).isEqualTo(3);
 
     }
