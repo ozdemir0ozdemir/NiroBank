@@ -5,18 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
+@Sql("classpath:test-users-data.sql")
 class UserRepositoryTest {
 
     @Autowired
@@ -27,147 +30,210 @@ class UserRepositoryTest {
     private static final PostgreSQLContainer<?> postgres
             = new PostgreSQLContainer<>("postgres:16-alpine");
 
-    @Test
-    void should_SaveUser_successfully() {
-
-        UserEntity entity = new UserEntity()
-                .setUsername("user1")
-                .setPassword("password")
-                .setRole(Role.USER);
-
-        userRepository.save(entity);
-
-        UserEntity mustExist = userRepository.findByUsername("user1", PageRequest.of(0, 1))
-                .getContent()
-                .getFirst();
-
-        assertThat(mustExist.getId()).isNotNull().isNotNegative();
-        assertThat(mustExist.getUsername()).isEqualTo("user1");
-        assertThat(mustExist.getPassword()).isEqualTo("password");
-        assertThat(mustExist.getRole()).isEqualTo(Role.USER);
-
-    }
+    private static final int TOTAL_USER_COUNT = 20;
+    private static final int TOTAL_ROLE_USER_COUNT = 7;
+    private static final int TOTAL_ROLE_ADMIN_COUNT = 6;
+    private static final int TOTAL_ROLE_MANAGER_COUNT = 7;
 
     @Test
-    void should_FindUserByUserId() {
+    void should_saveUser() {
+        UserEntity request = new UserEntity()
+                .setUsername("test-username")
+                .setPassword("test-password")
+                .setRole(Role.ADMIN);
 
-        UserEntity entity = new UserEntity()
-                .setUsername("user1")
-                .setPassword("password")
-                .setRole(Role.USER);
+        UserEntity savedEntity = userRepository.save(request);
 
-        Long savedId = userRepository.save(entity).getId();
-        assertThat(savedId).isNotNull().isNotNegative();
+        Page<UserEntity> userEntitiesPage =
+                userRepository.findAll(PageRequest.of(0, TOTAL_USER_COUNT + 1));
 
-        UserEntity savedEntity = userRepository.findById(savedId).get();
+        Optional<UserEntity> foundEntity = userEntitiesPage
+                .stream()
+                .filter(ent -> ent.getUsername().equals("test-username"))
+                .findFirst();
+
+        assertThat(userEntitiesPage.getTotalElements()).isEqualTo(TOTAL_USER_COUNT + 1);
         assertThat(savedEntity.getId()).isNotNull();
-        assertThat(savedEntity.getId()).isEqualTo(savedId);
-        assertThat(savedEntity.getUsername()).isEqualTo("user1");
-        assertThat(savedEntity.getPassword()).isEqualTo("password");
-        assertThat(savedEntity.getRole()).isEqualTo(Role.USER);
+        assertThat(foundEntity.isPresent()).isTrue();
+        assertThat(savedEntity).isEqualTo(foundEntity.get());
     }
 
     @Test
-    void should_FindUserByUsername() {
+    void should_findAllUsers() {
 
-        UserEntity entity = new UserEntity()
-                .setUsername("user1")
-                .setPassword("password")
-                .setRole(Role.USER);
+        Page<UserEntity> userEntitiesPage =
+                userRepository.findAll(PageRequest.of(0, 10));
 
-        userRepository.save(entity).getId();
-
-        UserEntity savedEntity = userRepository
-                .findByUsername(entity.getUsername(), PageRequest.of(0, 1))
-                .getContent()
-                .getFirst();
-        assertThat(savedEntity.getId()).isNotNull();
-        assertThat(savedEntity.getUsername()).isEqualTo("user1");
-        assertThat(savedEntity.getPassword()).isEqualTo("password");
-        assertThat(savedEntity.getRole()).isEqualTo(Role.USER);
+        assertThat(userEntitiesPage.getTotalElements()).isEqualTo(TOTAL_USER_COUNT);
+        assertThat(userEntitiesPage.getTotalPages()).isEqualTo(2);
     }
 
     @Test
-    void should_FindUsersByRole() {
+    void should_findAllByRole_roleIs_ADMIN() {
 
-        final int TOTAL_ENTITY = 5;
-        for (int i = 0; i < TOTAL_ENTITY; i++) {
-            userRepository.save(new UserEntity()
-                    .setUsername("user" + i)
-                    .setPassword("password")
-                    .setRole(Role.USER));
-        }
+        Page<UserEntity> userEntitiesPage =
+                userRepository.findAllByRole(Role.ADMIN, PageRequest.of(0, TOTAL_USER_COUNT));
 
-        List<UserEntity> entities = this.userRepository
-                .findByRole(Role.USER, PageRequest.of(0, 10))
-                .getContent();
-
-        assertThat(entities.size()).isEqualTo(TOTAL_ENTITY);
-
-        for (int i = 0; i < TOTAL_ENTITY; i++) {
-            assertThat(entities.get(i).getRole()).isEqualTo(Role.USER);
-        }
+        assertThat(userEntitiesPage.getTotalElements()).isEqualTo(TOTAL_ROLE_ADMIN_COUNT);
     }
 
     @Test
-    void should_FindUserByUsernameAndRole() {
+    void should_findAllByRole_roleIs_USER() {
 
-        UserEntity entity1 = new UserEntity()
-                .setUsername("admin1")
-                .setPassword("password")
-                .setRole(Role.ADMIN);
+        Page<UserEntity> userEntitiesPage =
+                userRepository.findAllByRole(Role.USER, PageRequest.of(0, TOTAL_USER_COUNT));
 
-        UserEntity entity2 = new UserEntity()
-                .setUsername("admin2")
-                .setPassword("password")
-                .setRole(Role.ADMIN);
-
-
-        this.userRepository.save(entity1);
-        this.userRepository.save(entity2);
-
-        List<UserEntity> entities = this.userRepository
-                .findByUsernameAndRole("admin1", Role.ADMIN, PageRequest.of(0, 10))
-                .getContent();
-
-        assertThat(entities.size()).isEqualTo(1);
-        assertThat(entities.getFirst().getUsername()).isEqualTo("admin1");
-        assertThat(entities.getFirst().getPassword()).isEqualTo("password");
-        assertThat(entities.getFirst().getRole()).isEqualTo(Role.ADMIN);
+        assertThat(userEntitiesPage.getTotalElements()).isEqualTo(TOTAL_ROLE_USER_COUNT);
     }
 
     @Test
-    void should_ChangePasswordByUsername() {
+    void should_findAllByRole_roleIs_MANAGER() {
 
-        UserEntity entity1 = new UserEntity()
-                .setUsername("admin1")
-                .setPassword("password")
-                .setRole(Role.ADMIN);
+        Page<UserEntity> userEntitiesPage =
+                userRepository.findAllByRole(Role.MANAGER, PageRequest.of(0, TOTAL_USER_COUNT));
 
-        Long savedId = this.userRepository.save(entity1).getId();
-
-        this.userRepository.changePasswordByUsername(entity1.getUsername(), "secret");
-
-        UserEntity updated = this.userRepository.findById(savedId).get();
-        assertThat(updated.getUsername()).isEqualTo(entity1.getUsername());
-        assertThat(updated.getPassword()).isEqualTo("secret");
+        assertThat(userEntitiesPage.getTotalElements()).isEqualTo(TOTAL_ROLE_MANAGER_COUNT);
     }
 
     @Test
-    void should_ChangeRoleByUsername() {
+    void should_findByUsername() {
 
-        UserEntity entity = new UserEntity()
-                .setUsername("user")
-                .setPassword("password")
-                .setRole(Role.USER);
+        // from test-users-data.sql
+        Optional<UserEntity> optionalUserEntity =
+                userRepository.findByUsername("Starlight123");
 
-        Long savedId = this.userRepository.save(entity).getId();
-
-        this.userRepository.changeUserRoleByUsername(entity.getUsername(), Role.MANAGER);
-
-        UserEntity updated = this.userRepository.findById(savedId).get();
-        assertThat(updated.getUsername()).isEqualTo(entity.getUsername());
-        assertThat(updated.getPassword()).isEqualTo("password");
-        assertThat(updated.getRole()).isEqualTo(Role.MANAGER);
+        assertThat(optionalUserEntity.isPresent()).isTrue();
+        assertThat(optionalUserEntity.get().getUsername()).isEqualTo("Starlight123");
+        assertThat(optionalUserEntity.get().getPassword()).isEqualTo("Twinkle@2024");
+        assertThat(optionalUserEntity.get().getRole()).isEqualTo(Role.USER);
     }
+
+    @Test
+    void should_not_findByUsername_when_userNotExist() {
+
+        // from test-users-data.sql
+        Optional<UserEntity> optionalUserEntity =
+                userRepository.findByUsername("test-username");
+
+        assertThat(optionalUserEntity.isPresent()).isFalse();
+    }
+
+    @Test
+    void should_findByUserId() {
+        Optional<UserEntity> optionalUserEntity =
+                userRepository.findById(1L);
+
+        assertThat(optionalUserEntity.isPresent()).isTrue();
+        assertThat(optionalUserEntity.get().getId()).isNotNull().isNotNegative();
+        assertThat(optionalUserEntity.get().getUsername()).isNotNull().isNotBlank();
+        assertThat(optionalUserEntity.get().getPassword()).isNotNull().isNotBlank();
+        assertThat(optionalUserEntity.get().getRole()).isNotNull();
+    }
+
+    @Test
+    void should_not_findByUserId_when_userNotExist() {
+        Optional<UserEntity> optionalUserEntity =
+                userRepository.findById(TOTAL_USER_COUNT + 10L);
+
+        assertThat(optionalUserEntity.isPresent()).isFalse();
+    }
+
+    @Test
+    void should_findByUsernameAndRole() {
+        Optional<UserEntity> optionalUserEntity =
+                userRepository.findByUsernameAndRole("Starlight123", Role.USER);
+
+        assertThat(optionalUserEntity.isPresent()).isTrue();
+        assertThat(optionalUserEntity.get().getId()).isNotNull().isNotNegative();
+        assertThat(optionalUserEntity.get().getUsername()).isEqualTo("Starlight123");
+        assertThat(optionalUserEntity.get().getPassword()).isEqualTo("Twinkle@2024");
+        assertThat(optionalUserEntity.get().getRole()).isEqualTo(Role.USER);
+    }
+
+    @Test
+    void should_findByUsernameAndRole_when_roleIsWrong() {
+        Optional<UserEntity> optionalUserEntity =
+                userRepository.findByUsernameAndRole("Starlight123", Role.ADMIN);
+
+        assertThat(optionalUserEntity.isPresent()).isFalse();
+    }
+
+    @Test
+    void should_findByUsernameAndRole_when_userNotExist() {
+        Optional<UserEntity> optionalUserEntity =
+                userRepository.findByUsernameAndRole("test-username", Role.USER);
+
+        assertThat(optionalUserEntity.isPresent()).isFalse();
+    }
+
+    @Test
+    void should_changePasswordByUsername() {
+        int affectedRowCount = userRepository
+                .changePasswordByUsername("Starlight123", "test-password");
+
+        Optional<UserEntity> userEntity =
+                userRepository.findByUsername("Starlight123");
+
+        assertThat(affectedRowCount).isEqualTo(1);
+        assertThat(userEntity.isPresent()).isTrue();
+        assertThat(userEntity.get().getUsername()).isEqualTo("Starlight123");
+        assertThat(userEntity.get().getPassword()).isEqualTo("test-password");
+        assertThat(userEntity.get().getRole()).isEqualTo(Role.USER);
+    }
+
+    @Test
+    void should_not_changePasswordByUsername_when_userNotExist() {
+        int affectedRowCount = userRepository
+                .changePasswordByUsername("test-username", "test-password");
+
+        assertThat(affectedRowCount).isEqualTo(0);
+    }
+
+    @Test
+    void should_changeRoleByUsername() {
+        int affectedRowCount = userRepository
+                .changeUserRoleByUsername("Starlight123", Role.ADMIN);
+
+        Optional<UserEntity> userEntity =
+                userRepository.findByUsername("Starlight123");
+
+        assertThat(affectedRowCount).isEqualTo(1);
+        assertThat(userEntity.isPresent()).isTrue();
+        assertThat(userEntity.get().getUsername()).isEqualTo("Starlight123");
+        assertThat(userEntity.get().getPassword()).isEqualTo("Twinkle@2024");
+        assertThat(userEntity.get().getRole()).isEqualTo(Role.ADMIN);
+    }
+
+    @Test
+    void should_not_changeRoleByUsername_when_userNotExist() {
+        int affectedRowCount = userRepository
+                .changeUserRoleByUsername("test-username", Role.ADMIN);
+
+        assertThat(affectedRowCount).isEqualTo(0);
+    }
+
+    @Test
+    void should_deleteUserByUserId() {
+
+        int affectedRowCount = userRepository.deleteById(1L);
+
+        Page<UserEntity> userEntitiesPage =
+                userRepository.findAll(PageRequest.of(0, TOTAL_USER_COUNT));
+
+        assertThat(affectedRowCount).isEqualTo(1);
+        assertThat(userEntitiesPage.getTotalElements()).isEqualTo(TOTAL_USER_COUNT - 1);
+    }
+
+    @Test
+    void should_not_deleteUserByUserId_when_userNotExit() {
+
+        int affectedRowCount = userRepository.deleteById(TOTAL_USER_COUNT + 10L);
+
+        Page<UserEntity> userEntitiesPage =
+                userRepository.findAll(PageRequest.of(0, TOTAL_USER_COUNT));
+
+        assertThat(affectedRowCount).isEqualTo(0);
+        assertThat(userEntitiesPage.getTotalElements()).isEqualTo(TOTAL_USER_COUNT);
+    }
+
 }

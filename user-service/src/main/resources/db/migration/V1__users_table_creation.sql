@@ -9,3 +9,4 @@ create table users
     primary key (user_id),
     constraint allowed_roles check (role in ('USER', 'MANAGER', 'ADMIN'))
 );
+

@@ -2,11 +2,13 @@ package ozdemir0ozdemir.userservice.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.userservice.exception.UsernameAlreadyExistsException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,9 +24,8 @@ public class UserService {
 
     public void saveUser(String username, String password, Role role) {
 
-        boolean usernameFound = !this.userRepository.findByUsername(username, PageRequest.of(0, 1))
-                .toList()
-                .isEmpty();
+        boolean usernameFound = this.userRepository.findByUsername(username)
+                .isPresent();
 
         if(usernameFound){
             throw new UsernameAlreadyExistsException("Username already exists");
@@ -40,20 +41,24 @@ public class UserService {
     // Read Operations
     public Page<User> findUserByUsername(String username) {
         return this.userRepository
-                .findByUsername(username, PageRequest.of(0, 1))
-                .map(UserService::entityToUser);
+                .findByUsername(username)
+                .map(UserService::entityToUser)
+                .map(user -> new PageImpl<>(List.of(user)))
+                .orElseThrow(() -> new RuntimeException("Username not found")); // FIXME: Custom Exception
     }
 
     public Page<User> findUsersByRole(int pageNumber, int pageSize, Role role) {
         return this.userRepository
-                .findByRole(role, PageRequest.of(pageNumber, pageSize))
+                .findAllByRole(role, PageRequest.of(pageNumber, pageSize))
                 .map(UserService::entityToUser);
     }
 
     public Page<User> findUserByUsernameAndRole(String username, Role role) {
         return this.userRepository
-                .findByUsernameAndRole(username, role, PageRequest.of(0, 1))
-                .map(UserService::entityToUser);
+                .findByUsernameAndRole(username, role)
+                .map(UserService::entityToUser)
+                .map(user -> new PageImpl<>(List.of(user)))
+                .orElseThrow(() -> new RuntimeException("Username with role not found")); // FIXME: Custom Exception
     }
 
     public Page<User> findAllUsers(int pageNumber, int pageSize) {
@@ -70,7 +75,7 @@ public class UserService {
 
     public Optional<User> findUserByUsernameAndPassword(String username, String password) {
         Optional<UserEntity> entity = this.userRepository
-                .findByUsername(username, PageRequest.of(0, 1))
+                .findByUsername(username)
                 .stream()
                 .findFirst();
 

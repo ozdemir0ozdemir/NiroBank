@@ -14,30 +14,22 @@ interface UserRepository extends PagingAndSortingRepository<UserEntity, Long> {
 
     UserEntity save(UserEntity userEntity);
 
-    @Query("from UserEntity")
-    Page<UserEntity> findAll(PageRequest pageRequest);
+    Page<UserEntity> findAllByRole(Role role, Pageable pageable);
+    Optional<UserEntity> findByUsername(String username);
 
+    @Query("from UserEntity u where u.id = :id")
     Optional<UserEntity> findById(Long id);
+    Optional<UserEntity> findByUsernameAndRole(String username, Role role);
 
-    @Query("from UserEntity u where u.username = :username and u.password = :password")
-    Optional<UserEntity> findByUsernameAndPassword(String username, String password);
-    Page<UserEntity> findByUsername(String username, PageRequest pageRequest);
-    Page<UserEntity> findByRole(Role role, Pageable pageable);
-    Page<UserEntity> findByUsernameAndRole(String username, Role role, PageRequest pageRequest);
+    @Modifying
+    @Query("update UserEntity user set user.password = :newPassword where user.username = :username")
+    int changePasswordByUsername(String username, String newPassword);
 
-    @Modifying(clearAutomatically = true)
-    @Query("""
-            update UserEntity user set user.password = :newPassword 
-            where user.username = :username
-            """)
-    void changePasswordByUsername(String username, String newPassword);
+    @Modifying
+    @Query("update UserEntity user set user.role = :role where user.username = :username")
+    int changeUserRoleByUsername(String username, Role role);
 
-    @Modifying(clearAutomatically = true)
-    @Query("""
-            update UserEntity user set user.role = :role 
-            where user.username = :username 
-            """)
-    void changeUserRoleByUsername(String username, Role role);
-
-    void deleteById(Long id);
+    @Modifying
+    @Query("delete from UserEntity user where user.id = :id")
+    int deleteById(Long id);
 }

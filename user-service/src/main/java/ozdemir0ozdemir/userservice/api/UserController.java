@@ -66,7 +66,6 @@ record UserController(UserService userService) {
     }
 
 
-
     @PostMapping("/login")
     ResponseEntity<Response<User>> login(@RequestBody Login request) {
         return this.userService()
