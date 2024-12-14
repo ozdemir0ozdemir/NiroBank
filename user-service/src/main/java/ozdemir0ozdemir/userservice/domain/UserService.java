@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ozdemir0ozdemir.userservice.exception.UserNotFoundException;
 import ozdemir0ozdemir.userservice.exception.UsernameAlreadyExistsException;
 
 import java.util.List;
@@ -18,33 +19,32 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void saveUser(String username, String password) {
-               this.saveUser(username, password, Role.USER);
+    public Long saveUser(String username, String password) {
+        return this.saveUser(username, password, Role.USER).getId();
     }
 
-    public void saveUser(String username, String password, Role role) {
+    public UserEntity saveUser(String username, String password, Role role) {
 
         boolean usernameFound = this.userRepository.findByUsername(username)
                 .isPresent();
 
-        if(usernameFound){
+        if (usernameFound) {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
 
-        this.userRepository
+        return this.userRepository
                 .save(new UserEntity()
-                .setUsername(username)
-                .setPassword(passwordEncoder.encode(password))
-                .setRole(role));
+                        .setUsername(username)
+                        .setPassword(passwordEncoder.encode(password))
+                        .setRole(role));
     }
 
     // Read Operations
-    public Page<User> findUserByUsername(String username) {
+    public User findUserByUsername(String username) {
         return this.userRepository
                 .findByUsername(username)
                 .map(UserService::entityToUser)
-                .map(user -> new PageImpl<>(List.of(user)))
-                .orElseThrow(() -> new RuntimeException("Username not found")); // FIXME: Custom Exception
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public Page<User> findUsersByRole(int pageNumber, int pageSize, Role role) {
@@ -53,12 +53,11 @@ public class UserService {
                 .map(UserService::entityToUser);
     }
 
-    public Page<User> findUserByUsernameAndRole(String username, Role role) {
+    public User findUserByUsernameAndRole(String username, Role role) {
         return this.userRepository
                 .findByUsernameAndRole(username, role)
                 .map(UserService::entityToUser)
-                .map(user -> new PageImpl<>(List.of(user)))
-                .orElseThrow(() -> new RuntimeException("Username with role not found")); // FIXME: Custom Exception
+                .orElseThrow(() -> new UserNotFoundException("User with role not found"));
     }
 
     public Page<User> findAllUsers(int pageNumber, int pageSize) {
@@ -79,8 +78,8 @@ public class UserService {
                 .stream()
                 .findFirst();
 
-        if(entity.isPresent() &&  passwordEncoder.matches(password, entity.get().getPassword())){
-           return entity.map(UserService::entityToUser);
+        if (entity.isPresent() && passwordEncoder.matches(password, entity.get().getPassword())) {
+            return entity.map(UserService::entityToUser);
         }
         return Optional.empty();
     }

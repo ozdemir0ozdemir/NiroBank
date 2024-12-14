@@ -14,7 +14,7 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     ResponseEntity<Response<Void>> handleUsernameAlreadyExistsException(Exception ex) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.CONFLICT)
                 .body(Response.failed(ex.getMessage()));
     }
 }

@@ -3,6 +3,7 @@ package ozdemir0ozdemir.userservice.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -17,6 +18,7 @@ import ozdemir0ozdemir.userservice.request.Login;
 import ozdemir0ozdemir.userservice.request.RegisterUser;
 
 import java.net.URI;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -26,13 +28,14 @@ record UserController(UserService userService) {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
+    // CRUD
     @PostMapping
-    ResponseEntity<Response<Void>> registerUser(@RequestBody RegisterUser request) {
-        this.userService.saveUser(request.username(), request.password());
+    ResponseEntity<Response<Void>> saveNewUser(@RequestBody RegisterUser request) {
+        Long savedUserId = this.userService.saveUser(request.username(), request.password());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{username}")
-                .buildAndExpand(request.username())
+                .path("/{userId}")
+                .buildAndExpand(savedUserId)
                 .toUri();
 
         return ResponseEntity.created(location).body(Response.succeeded("User saved successfully"));
@@ -44,61 +47,63 @@ record UserController(UserService userService) {
                                                      @RequestParam(name = "username", required = false) String username,
                                                      @RequestParam(name = "role", required = false) Role role) {
 
-        page = Math.max(0, page - 1);
-        size = Math.min(Math.max(5, size), 50);
+        int pageNumber = Math.max(0, page - 1);
+        int pageSize = Math.min(Math.max(5, size), 50);
 
         Page<User> usersPage;
 
-        if(username != null && role != null){
-            usersPage = this.userService.findUserByUsernameAndRole(username, role);
+        if(username == null && role == null){
+            usersPage = userService.findAllUsers(pageNumber, pageSize);
         }
-        else if(username == null && role != null){
-            usersPage = this.userService.findUsersByRole(page, size, role);
+        else if(username == null){
+            usersPage = userService.findUsersByRole(pageNumber, pageSize, role);
         }
-        else if(username != null && role == null){
-            usersPage = this.userService.findUserByUsername(username);
+        else if(role == null){
+            usersPage = new PageImpl<>(List.of(userService.findUserByUsername(username)));
         }
         else {
-            usersPage = this.userService.findAllUsers(page, size);
+            usersPage = new PageImpl<>(List.of(userService.findUserByUsernameAndRole(username, role)));
         }
 
-        return ResponseEntity.ok(PagedResponse.succeeded(usersPage, "User(s) found"));
-    }
-
-
-    @PostMapping("/login")
-    ResponseEntity<Response<User>> login(@RequestBody Login request) {
-        return this.userService()
-                .findUserByUsernameAndPassword(request.username(), request.password())
-                .map(user -> ResponseEntity.ok(Response.succeeded(user, "User found")))
-                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found")));
+        return ResponseEntity.ok(PagedResponse.succeeded(usersPage, usersPage.get() + " User(s) found"));
     }
 
     @GetMapping("/{userId}")
     ResponseEntity<Response<User>> getUserByUserId(@PathVariable Long userId) {
         return this.userService()
                 .findUserById(userId)
-                .map(user -> ResponseEntity.ok(Response.succeeded(user, "User found")))
+                .map(user -> Response.succeeded(user, "User found"))
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found")));
     }
 
-    @PatchMapping
-    ResponseEntity<Void> changeUserRoleByUserId(@RequestBody ChangeUserRole request) {
+    @DeleteMapping("/{userId}")
+    ResponseEntity<Void> deleteUserByUserId(@PathVariable Long userId) {
+        this.userService.deleteUserByUserId(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ACTIONS
+    @PostMapping("/login")
+    ResponseEntity<Response<User>> login(@RequestBody Login request) {
+        return this.userService()
+                .findUserByUsernameAndPassword(request.username(), request.password())
+                .map(user -> Response.succeeded(user, "User found"))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(NOT_FOUND).body(Response.failed("User not found")));
+    }
+
+    @PatchMapping("/{userId}/change-role")
+    ResponseEntity<Void> changeUserRoleByUserId(@PathVariable Long userId, @RequestBody ChangeUserRole request) {
 
         this.userService.changeUserRoleByUsernameAndUserId(request.role(), request.username());
         return ResponseEntity.noContent().build();
     }
 
-//    @PatchMapping
-//    ResponseEntity<Void> changeUserPassword(@RequestBody ChangeUserPassword request) {
-//
-//        this.userService.changeUserPassword(request.username(), request.password());
-//        return ResponseEntity.noContent().build();
-//    }
+    @PatchMapping("/{userId}/change-password")
+    ResponseEntity<Void> changeUserPassword(@PathVariable Long userId, @RequestBody ChangeUserPassword request) {
 
-    @DeleteMapping("/{userId}")
-    ResponseEntity<Void> deleteUserByUserId(@PathVariable Long userId) {
-        this.userService.deleteUserByUserId(userId);
+        this.userService.changeUserPassword(request.username(), request.password());
         return ResponseEntity.noContent().build();
     }
 }
