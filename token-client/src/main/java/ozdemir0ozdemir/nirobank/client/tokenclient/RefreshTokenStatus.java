@@ -1,6 +1,6 @@
 package ozdemir0ozdemir.nirobank.client.tokenclient;
 
-public enum TokenStatus {
+public enum RefreshTokenStatus {
     ACCEPTABLE,
     REVOKED
 }
