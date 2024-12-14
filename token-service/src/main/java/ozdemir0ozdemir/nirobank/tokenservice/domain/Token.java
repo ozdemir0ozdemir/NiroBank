@@ -6,4 +6,4 @@ public record Token(String tokenId,
                     String Token,
                     String username,
                     Date expiresAt,
-                    TokenStatus tokenStatus) {}
+                    RefreshTokenStatus tokenStatus) {}

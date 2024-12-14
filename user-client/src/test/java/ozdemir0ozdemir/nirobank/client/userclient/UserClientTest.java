@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ozdemir0ozdemir.common.response.Response;
 import ozdemir0ozdemir.common.response.ResponseStatus;
+import ozdemir0ozdemir.common.user.Role;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
@@ -60,7 +61,7 @@ class UserClientTest {
                 .respond(response);
 
         // When
-        Response<User> userResponse = userClient.getUserByUserId(1L);
+        Response<User> userResponse = userClient.getUserByUserId(1L).getBody();
 
         // Then
         assertThat(userResponse.getStatus()).isEqualTo(ResponseStatus.SUCCEEDED);

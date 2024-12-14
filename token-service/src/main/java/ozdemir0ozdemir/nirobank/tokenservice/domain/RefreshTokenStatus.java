@@ -1,6 +1,6 @@
 package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
-public enum TokenStatus {
+public enum RefreshTokenStatus {
     ACCEPTABLE,
     REVOKED
 }

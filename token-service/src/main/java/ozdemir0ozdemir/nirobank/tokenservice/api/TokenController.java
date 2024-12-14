@@ -5,59 +5,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ozdemir0ozdemir.common.response.PagedResponse;
 import ozdemir0ozdemir.common.response.Response;
 import ozdemir0ozdemir.nirobank.tokenservice.domain.AccessToken;
 import ozdemir0ozdemir.nirobank.tokenservice.domain.Token;
-import ozdemir0ozdemir.nirobank.tokenservice.domain.TokenService;
-import ozdemir0ozdemir.nirobank.tokenservice.domain.TokenStatus;
+import ozdemir0ozdemir.nirobank.tokenservice.domain.RefreshTokenStatus;
 import ozdemir0ozdemir.nirobank.tokenservice.request.CreateToken;
 import ozdemir0ozdemir.nirobank.tokenservice.request.RefreshToken;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("/api/v1/tokens")
-record TokenController(TokenService service) {
+record TokenController() {
 
     private static final Logger log = LoggerFactory.getLogger(TokenController.class);
 
     @PostMapping
     ResponseEntity<Response<AccessToken>> createToken(@RequestBody CreateToken request) {
-        AccessToken accessToken = this.service
-                .createTokens(request.username(), request.role().getPermissions());
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/refresh/{refreshTokenId}")
-                .buildAndExpand(accessToken.refreshTokenId())
-                .toUri();
-
-        return ResponseEntity
-                .created(location)
-                .body(Response.succeeded(accessToken, "Tokens successfully created"));
+        return null;
     }
 
     @PostMapping("/refresh")
     ResponseEntity<Response<AccessToken>> refreshAccessToken(@RequestBody RefreshToken request) {
-        log.info("Access token refreshed requested : {}", request.tokenId());
-        AccessToken accessToken = this.service.refreshToken(request.tokenId());
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/refresh/{refreshTokenId}")
-                .buildAndExpand(accessToken.refreshTokenId())
-                .toUri();
-
-        log.info("Access token refreshed for : {}", request.tokenId());
-        log.info("Access token  : {}", accessToken.username());
-        return ResponseEntity
-                .created(location)
-                .body(Response.succeeded(accessToken, "Tokens successfully refreshed"));
+        return null;
     }
 
     @GetMapping
     ResponseEntity<PagedResponse<Token>> findTokens(@RequestParam(name = "username", required = false) String username,
-                                                    @RequestParam(name = "token-status", required = false) TokenStatus tokenStatus,
+                                                    @RequestParam(name = "token-status", required = false) RefreshTokenStatus tokenStatus,
                                                     @RequestParam(name = "page-number", defaultValue = "0") int pageNumber,
                                                     @RequestParam(name = "page-size", defaultValue = "10") int pageSize) {
 
@@ -69,42 +43,29 @@ record TokenController(TokenService service) {
 
         Page<Token> tokenPage;
         if (!usernameValid && !tokenStatusValid) {
-            tokenPage = this.service.findAll(page, size);
         }
         else if (!usernameValid) {
-            tokenPage = this.service.findAllByTokenStatus(tokenStatus, page, size);
         }
         else if (!tokenStatusValid) {
-            tokenPage = this.service.findAllByUsername(username, page, size);
         }
         else {
-            tokenPage = this.service.findAllByUsernameAndTokenStatus(username, tokenStatus, page, size);
         }
-
-        PagedResponse<Token> response = PagedResponse.succeeded(tokenPage, "Request succeeded");
-        return ResponseEntity.ok(response);
+        return null;
     }
 
     @GetMapping("/{tokenId}")
     ResponseEntity<Response<Token>> getTokenByTokenId(@PathVariable String tokenId) {
-        Token token = this.service.findByTokenId(tokenId);
-
-        return ResponseEntity.ok(Response.succeeded(token, "Token found"));
+        return null;
     }
 
-//    @PostMapping("/{tokenId}")
-//    ResponseEntity<Void> revokeTokenByTokenId(@PathVariable String tokenId) {
-//        this.service.revokeTokenByTokenId(tokenId);
-//
-//        return ResponseEntity.noContent().build();
-//
-//    }
+    @PostMapping("/{tokenId}")
+    ResponseEntity<Void> revokeTokenByTokenId(@PathVariable String tokenId) {
+        return null;
+    }
 
     @DeleteMapping("/{tokenId}")
     ResponseEntity<Void> deleteTokenByTokenId(@PathVariable String tokenId) {
-        this.service.deleteTokenByTokenId(tokenId);
-
-        return ResponseEntity.noContent().build();
+        return null;
     }
 
 }

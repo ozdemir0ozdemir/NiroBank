@@ -6,4 +6,4 @@ public record AccessToken(String refreshTokenId,
                           String accessToken,
                           String username,
                           Date expiresAt,
-                          TokenStatus tokenStatus) {}
+                          RefreshTokenStatus tokenStatus) {}
