@@ -160,7 +160,7 @@ class UserRepositoryTest implements WithPostgresContainer {
     @Test
     void should_changePasswordByUsername() {
         int affectedRowCount = userRepository
-                .changePasswordByUsername("Starlight123", "test-password");
+                .changePasswordByUsername(1L, "Starlight123", "test-password");
 
         Optional<UserEntity> userEntity =
                 userRepository.findByUsername("Starlight123");
@@ -175,7 +175,7 @@ class UserRepositoryTest implements WithPostgresContainer {
     @Test
     void should_not_changePasswordByUsername_when_userNotExist() {
         int affectedRowCount = userRepository
-                .changePasswordByUsername("test-username", "test-password");
+                .changePasswordByUsername(1L, "test-username", "test-password");
 
         assertThat(affectedRowCount).isEqualTo(0);
     }
@@ -183,7 +183,7 @@ class UserRepositoryTest implements WithPostgresContainer {
     @Test
     void should_changeRoleByUsername() {
         int affectedRowCount = userRepository
-                .changeUserRoleByUsername("Starlight123", Role.ADMIN);
+                .changeUserRoleByUsername(1L, "Starlight123", Role.ADMIN);
 
         Optional<UserEntity> userEntity =
                 userRepository.findByUsername("Starlight123");
@@ -198,7 +198,7 @@ class UserRepositoryTest implements WithPostgresContainer {
     @Test
     void should_not_changeRoleByUsername_when_userNotExist() {
         int affectedRowCount = userRepository
-                .changeUserRoleByUsername("test-username", Role.ADMIN);
+                .changeUserRoleByUsername(1L, "test-username", Role.ADMIN);
 
         assertThat(affectedRowCount).isEqualTo(0);
     }

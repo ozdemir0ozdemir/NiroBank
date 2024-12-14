@@ -2,14 +2,12 @@ package ozdemir0ozdemir.userservice.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.userservice.exception.UserNotFoundException;
 import ozdemir0ozdemir.userservice.exception.UsernameAlreadyExistsException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +21,7 @@ public class UserService {
         return this.saveUser(username, password, Role.USER).getId();
     }
 
-    public UserEntity saveUser(String username, String password, Role role) {
+    UserEntity saveUser(String username, String password, Role role) {
 
         boolean usernameFound = this.userRepository.findByUsername(username)
                 .isPresent();
@@ -85,19 +83,19 @@ public class UserService {
     }
 
     // Update Operations
-    public void changeUserRoleByUsernameAndUserId(Role role, String username) {
-        this.userRepository
-                .changeUserRoleByUsername(username, role);
+    public boolean changeUserRoleByUsernameAndUserId(Long userId, Role role, String username) {
+        return this.userRepository
+                .changeUserRoleByUsername(userId, username, role) == 1;
     }
 
-    public void changeUserPassword(String username, String password) {
-        this.userRepository
-                .changePasswordByUsername(username, passwordEncoder.encode(password));
+    public boolean changeUserPassword(Long userId, String username, String password) {
+        return this.userRepository
+                .changePasswordByUsername(userId, username, passwordEncoder.encode(password)) == 1;
     }
 
     // Delete Operations
-    public void deleteUserByUserId(Long id) {
-        this.userRepository.deleteById(id);
+    public boolean deleteUserByUserId(Long id) {
+        return this.userRepository.deleteById(id) == 1;
     }
 
     // Static Helper

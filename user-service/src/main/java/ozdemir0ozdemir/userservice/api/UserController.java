@@ -42,30 +42,30 @@ record UserController(UserService userService) {
     }
 
     @GetMapping
-    ResponseEntity<PagedResponse<User>> getAllUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
-                                                     @RequestParam(name = "size", defaultValue = "10") Integer size,
-                                                     @RequestParam(name = "username", required = false) String username,
-                                                     @RequestParam(name = "role", required = false) Role role) {
+    ResponseEntity<PagedResponse<User>> searchUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
+                                                    @RequestParam(name = "size", defaultValue = "10") Integer size,
+                                                    @RequestParam(name = "username", required = false) String username,
+                                                    @RequestParam(name = "role", required = false) Role role) {
 
         int pageNumber = Math.max(0, page - 1);
         int pageSize = Math.min(Math.max(5, size), 50);
 
         Page<User> usersPage;
 
-        if(username == null && role == null){
+        if (username == null && role == null) {
             usersPage = userService.findAllUsers(pageNumber, pageSize);
         }
-        else if(username == null){
+        else if (username == null) {
             usersPage = userService.findUsersByRole(pageNumber, pageSize, role);
         }
-        else if(role == null){
+        else if (role == null) {
             usersPage = new PageImpl<>(List.of(userService.findUserByUsername(username)));
         }
         else {
             usersPage = new PageImpl<>(List.of(userService.findUserByUsernameAndRole(username, role)));
         }
 
-        return ResponseEntity.ok(PagedResponse.succeeded(usersPage, usersPage.get() + " User(s) found"));
+        return ResponseEntity.ok(PagedResponse.succeeded(usersPage, usersPage.getTotalElements() + " User(s) found"));
     }
 
     @GetMapping("/{userId}")
@@ -79,8 +79,11 @@ record UserController(UserService userService) {
 
     @DeleteMapping("/{userId}")
     ResponseEntity<Void> deleteUserByUserId(@PathVariable Long userId) {
-        this.userService.deleteUserByUserId(userId);
-        return ResponseEntity.noContent().build();
+        boolean succeeded = this.userService.deleteUserByUserId(userId);
+        if (succeeded) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // ACTIONS
@@ -96,14 +99,24 @@ record UserController(UserService userService) {
     @PatchMapping("/{userId}/change-role")
     ResponseEntity<Void> changeUserRoleByUserId(@PathVariable Long userId, @RequestBody ChangeUserRole request) {
 
-        this.userService.changeUserRoleByUsernameAndUserId(request.role(), request.username());
-        return ResponseEntity.noContent().build();
+        boolean succeeded = this.userService
+                .changeUserRoleByUsernameAndUserId(userId, request.role(), request.username());
+
+        if (succeeded) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/{userId}/change-password")
     ResponseEntity<Void> changeUserPassword(@PathVariable Long userId, @RequestBody ChangeUserPassword request) {
 
-        this.userService.changeUserPassword(request.username(), request.password());
-        return ResponseEntity.noContent().build();
+        boolean succeeded = this.userService
+                .changeUserPassword(userId, request.username(), request.password());
+
+        if (succeeded) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

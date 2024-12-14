@@ -21,18 +21,4 @@ public class UserServiceApplication {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-    CommandLineRunner addExampleUsersRunner(UserService userService) {
-        return _ -> {
-            boolean isAnyUserExists  = userService.findAllUsers(0, 20).getTotalElements() > 0L;
-            if(!isAnyUserExists){
-                userService.saveUser("admin", "admin", Role.ADMIN);
-                userService.saveUser("manager", "manager", Role.MANAGER);
-                for(int i = 0; i < 2; i++) {
-                    userService.saveUser("user"+i, "user", Role.USER);
-                }
-            }
-        };
-    }
-
 }
