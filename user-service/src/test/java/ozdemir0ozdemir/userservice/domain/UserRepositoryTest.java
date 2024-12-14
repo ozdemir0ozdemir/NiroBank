@@ -8,9 +8,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import ozdemir0ozdemir.userservice.WithPostgresContainer;
 
 import java.util.Optional;
 
@@ -18,17 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @Sql("classpath:test-users-data.sql")
-class UserRepositoryTest {
+class UserRepositoryTest implements WithPostgresContainer {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Container
-    @ServiceConnection
-    private static final PostgreSQLContainer<?> postgres
-            = new PostgreSQLContainer<>("postgres:16-alpine");
 
     private static final int TOTAL_USER_COUNT = 20;
     private static final int TOTAL_ROLE_USER_COUNT = 7;
