@@ -20,12 +20,10 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
-	implementation libs.openfeign
 
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	implementation project(":user-client")
 	implementation project(":common-module")
 
 	implementation libs.jjwt.getApi();

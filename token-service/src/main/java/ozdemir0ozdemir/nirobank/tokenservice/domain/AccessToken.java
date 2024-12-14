@@ -1,9 +1,9 @@
 package ozdemir0ozdemir.nirobank.tokenservice.domain;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
-public record AccessToken(String refreshTokenId,
-                          String accessToken,
+public record AccessToken(String refreshTokenReferenceId,
                           String username,
-                          Date expiresAt,
-                          RefreshTokenStatus tokenStatus) {}
+                          String accessToken,
+                          Timestamp expiresAt) {
+}

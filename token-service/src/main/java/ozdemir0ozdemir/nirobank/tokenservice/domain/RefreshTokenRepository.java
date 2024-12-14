@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Optional;
 
 interface RefreshTokenRepository extends PagingAndSortingRepository<RefreshTokenEntity, Long> {
