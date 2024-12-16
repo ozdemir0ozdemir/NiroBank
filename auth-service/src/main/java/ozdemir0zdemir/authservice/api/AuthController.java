@@ -1,5 +1,6 @@
 package ozdemir0zdemir.authservice.api;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public record AuthController(AuthService authService) {
     }
 
     @GetMapping("/refresh")
-    ResponseEntity<Response<AccessToken>> refresh(@RequestBody RefreshAccessToken refreshAccessToken) {
+    ResponseEntity<Response<AccessToken>> refresh(@Valid @RequestBody RefreshAccessToken refreshAccessToken) {
         return ResponseEntity.ok(authService.refresh(refreshAccessToken.refreshTokenReferenceId()));
     }
 }

@@ -1,21 +1,23 @@
 package ozdemir0ozdemir.userservice.api;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ozdemir0ozdemir.common.response.PagedResponse;
 import ozdemir0ozdemir.common.response.Response;
+import ozdemir0ozdemir.common.user.NullableValidRole;
 import ozdemir0ozdemir.userservice.domain.Role;
 import ozdemir0ozdemir.userservice.domain.User;
 import ozdemir0ozdemir.userservice.domain.UserService;
@@ -53,10 +55,20 @@ class UserController {
     }
 
     @GetMapping
-    ResponseEntity<PagedResponse<User>> searchUsers(@RequestParam(name = "page", defaultValue = "0") Integer page,
-                                                    @RequestParam(name = "size", defaultValue = "10") Integer size,
-                                                    @RequestParam(name = "username", required = false) String username,
-                                                    @RequestParam(name = "role", required = false) Role role) {
+    ResponseEntity<PagedResponse<User>> searchUsers(
+            @Min(value = 0, message = "Page cannot be less than zero")
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+
+            @Min(value = 5, message = "Page size cannot be less than five")
+            @Max(value = 50, message = "Page size cannot be greater than fifty")
+            @RequestParam(name = "size", defaultValue = "10") Integer size,
+
+            @Nullable
+            @Size(min = 4, max = 30, message = "Username length must be in range 4-30")
+            @RequestParam(name = "username", required = false) String username,
+
+            @NullableValidRole
+            @RequestParam(name = "role", required = false) String role) {
 
         int pageNumber = Math.max(0, page - 1);
         int pageSize = Math.min(Math.max(5, size), 50);
@@ -67,13 +79,13 @@ class UserController {
             usersPage = userService.findAllUsers(pageNumber, pageSize);
         }
         else if (username == null) {
-            usersPage = userService.findUsersByRole(pageNumber, pageSize, role);
+            usersPage = userService.findUsersByRole(pageNumber, pageSize, Role.valueOf(role.toUpperCase()));
         }
         else if (role == null) {
             usersPage = new PageImpl<>(List.of(userService.findUserByUsername(username)));
         }
         else {
-            usersPage = new PageImpl<>(List.of(userService.findUserByUsernameAndRole(username, role)));
+            usersPage = new PageImpl<>(List.of(userService.findUserByUsernameAndRole(username, Role.valueOf(role.toUpperCase()))));
         }
 
         return ResponseEntity.ok(PagedResponse.succeeded(usersPage, usersPage.getTotalElements() + " User(s) found"));
@@ -118,7 +130,7 @@ class UserController {
     }
 
     @PatchMapping("/{userId}/change-password")
-    ResponseEntity<Response<Void>> changeUserPassword(@PathVariable Long userId,  @Valid @RequestBody ChangeUserPassword request) {
+    ResponseEntity<Response<Void>> changeUserPassword(@PathVariable Long userId, @Valid @RequestBody ChangeUserPassword request) {
         boolean succeeded = this.userService
                 .changeUserPassword(userId, request.username(), request.password());
         if (succeeded) {

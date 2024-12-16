@@ -1,9 +1,13 @@
 package ozdemir0ozdemir.nirobank.tokenservice.api;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ozdemir0ozdemir.common.response.PagedResponse;
@@ -18,12 +22,15 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/tokens")
-record TokenController(RefreshTokenService refreshTokenService) {
+@RequiredArgsConstructor
+@Validated
+class TokenController {
 
     private static final Logger log = LoggerFactory.getLogger(TokenController.class);
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping
-    ResponseEntity<Response<AccessToken>> generateToken(@RequestBody GenerateToken request) {
+    ResponseEntity<Response<AccessToken>> generateToken(@Valid @RequestBody GenerateToken request) {
         AccessToken result = refreshTokenService.generateTokenFor(request.username(), request.role());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -63,7 +70,10 @@ record TokenController(RefreshTokenService refreshTokenService) {
     }
 
     @PostMapping("/{refreshTokenReferenceId}/refresh")
-    ResponseEntity<Response<AccessToken>> refreshAccessToken(@PathVariable String refreshTokenReferenceId) {
+    ResponseEntity<Response<AccessToken>> refreshAccessToken(
+            @Valid
+            @NotBlank(message = "Refresh token reference id cannot be blank or null")
+            @PathVariable String refreshTokenReferenceId) {
 
         Response<AccessToken> response = Response.succeeded(
                 refreshTokenService.refreshTokenFor(refreshTokenReferenceId),
@@ -73,7 +83,10 @@ record TokenController(RefreshTokenService refreshTokenService) {
     }
 
     @GetMapping("/{refreshTokenReferenceId}")
-    ResponseEntity<Response<RefreshToken>> findRefreshTokenByReferenceId(@PathVariable String refreshTokenReferenceId) {
+    ResponseEntity<Response<RefreshToken>> findRefreshTokenByReferenceId(
+            @Valid
+            @NotBlank(message = "Refresh token reference id cannot be blank or null")
+            @PathVariable String refreshTokenReferenceId) {
         RefreshToken refreshToken =
                 refreshTokenService.findRefreshTokenByReferenceId(refreshTokenReferenceId);
 

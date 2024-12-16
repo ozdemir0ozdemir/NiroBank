@@ -1,5 +1,6 @@
 package ozdemir0ozdemir.userservice.api;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,6 +44,20 @@ class GlobalExceptionHandler {
         ex.getBindingResult()
                 .getAllErrors()
                 .forEach(error -> errorMessages.add(error.getDefaultMessage()));
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Response.failed(errors, "Please provide valid parameters"));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    ResponseEntity<Response<Map<?, ?>>> handle(ConstraintViolationException ex) {
+        List<String> errorMessages = new ArrayList<>();
+        Map<String, List<String>> errors = new HashMap<>();
+        errors.put("errors", errorMessages);
+
+        ex.getConstraintViolations()
+                .forEach(error -> errorMessages.add(error.getMessage()));
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
