@@ -1,7 +1,11 @@
 package ozdemir0ozdemir.nirobank.tokenservice.api;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ozdemir0ozdemir.common.response.PagedResponse;
 import ozdemir0ozdemir.common.response.Response;
-import ozdemir0ozdemir.nirobank.tokenservice.domain.AccessToken;
-import ozdemir0ozdemir.nirobank.tokenservice.domain.RefreshToken;
-import ozdemir0ozdemir.nirobank.tokenservice.domain.RefreshTokenService;
-import ozdemir0ozdemir.nirobank.tokenservice.domain.RefreshTokenStatus;
+import ozdemir0ozdemir.nirobank.tokenservice.domain.*;
 import ozdemir0ozdemir.nirobank.tokenservice.request.GenerateToken;
 
 import java.net.URI;
@@ -42,26 +43,44 @@ class TokenController {
     }
 
     @GetMapping
-    ResponseEntity<PagedResponse<RefreshToken>> findTokens(@RequestParam(name = "username", required = false) String username,
-                                                           @RequestParam(name = "token-status", required = false) RefreshTokenStatus refreshTokenStatus,
-                                                           @RequestParam(name = "page-number", defaultValue = "0") int pageNumber,
-                                                           @RequestParam(name = "page-size", defaultValue = "10") int pageSize) {
+    ResponseEntity<PagedResponse<RefreshToken>> findTokens(
+            @Min(value = 0, message = "Page cannot be less than zero")
+            @RequestParam(name = "page", defaultValue = "0") int page,
 
-        int page = Math.max(0, pageNumber - 1);
-        int size = Math.min(Math.max(5, pageSize), 50);
+            @Min(value = 5, message = "Page size cannot be less than five")
+            @Max(value = 50, message = "Page size cannot be greater than fifty")
+            @RequestParam(name = "size", defaultValue = "10") int size,
+
+            @Nullable
+            @Size(min = 4, max = 30, message = "Username length must be in range 4-30")
+            @RequestParam(name = "username", required = false) String username,
+
+            @NullableValidRefreshTokenStatus
+            @RequestParam(name = "token-status", required = false) String refreshTokenStatus
+    ) {
+
+        int pageNumber = Math.max(0, page - 1);
+        int pageSize = Math.min(Math.max(5, size), 50);
 
         Page<RefreshToken> refreshTokenPage;
         if (username == null && refreshTokenStatus == null) {
-            refreshTokenPage = refreshTokenService.findAll(page, size);
+            refreshTokenPage = refreshTokenService.findAll(page, pageSize);
         }
         else if (username == null) {
-            refreshTokenPage = refreshTokenService.findAllByTokenStatus(refreshTokenStatus, page, size);
+            refreshTokenPage = refreshTokenService.findAllByTokenStatus(
+                    RefreshTokenStatus.valueOf(refreshTokenStatus),
+                    page,
+                    pageSize);
         }
         else if (refreshTokenStatus == null) {
-            refreshTokenPage = refreshTokenService.findAllByUsername(username, page, size);
+            refreshTokenPage = refreshTokenService.findAllByUsername(username, page, pageSize);
         }
         else {
-            refreshTokenPage = refreshTokenService.findAllByUsernameAndRefreshTokenStatus(username, refreshTokenStatus, page, size);
+            refreshTokenPage = refreshTokenService.findAllByUsernameAndRefreshTokenStatus(
+                    username,
+                    RefreshTokenStatus.valueOf(refreshTokenStatus),
+                    page,
+                    pageSize);
         }
 
         return ResponseEntity.ok(PagedResponse.succeeded(
