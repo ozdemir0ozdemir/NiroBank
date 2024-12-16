@@ -1,6 +1,5 @@
 package ozdemir0zdemir.authservice.request;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 public record RefreshAccessToken(

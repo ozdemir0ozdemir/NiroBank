@@ -64,22 +64,22 @@ class TokenController {
 
         Page<RefreshToken> refreshTokenPage;
         if (username == null && refreshTokenStatus == null) {
-            refreshTokenPage = refreshTokenService.findAll(page, pageSize);
+            refreshTokenPage = refreshTokenService.findAll(pageNumber, pageSize);
         }
         else if (username == null) {
             refreshTokenPage = refreshTokenService.findAllByTokenStatus(
                     RefreshTokenStatus.valueOf(refreshTokenStatus),
-                    page,
+                    pageNumber,
                     pageSize);
         }
         else if (refreshTokenStatus == null) {
-            refreshTokenPage = refreshTokenService.findAllByUsername(username, page, pageSize);
+            refreshTokenPage = refreshTokenService.findAllByUsername(username, pageNumber, pageSize);
         }
         else {
             refreshTokenPage = refreshTokenService.findAllByUsernameAndRefreshTokenStatus(
                     username,
                     RefreshTokenStatus.valueOf(refreshTokenStatus),
-                    page,
+                    pageNumber,
                     pageSize);
         }
 
