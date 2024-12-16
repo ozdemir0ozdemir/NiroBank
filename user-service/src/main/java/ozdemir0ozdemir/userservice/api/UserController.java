@@ -1,11 +1,17 @@
 package ozdemir0ozdemir.userservice.api;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ozdemir0ozdemir.common.response.PagedResponse;
@@ -25,13 +31,17 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/v1/users")
-record UserController(UserService userService) {
+@RequiredArgsConstructor
+@Validated
+class UserController {
+
+    private final UserService userService;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     // CRUD
     @PostMapping
-    ResponseEntity<Response<Void>> saveNewUser(@RequestBody RegisterUser request) {
+    ResponseEntity<Response<Void>> saveNewUser(@Valid @RequestBody RegisterUser request) {
         Long savedUserId = this.userService.saveUser(request.username(), request.password());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -71,7 +81,7 @@ record UserController(UserService userService) {
 
     @GetMapping("/{userId}")
     ResponseEntity<Response<User>> getUserByUserId(@PathVariable Long userId) {
-        return this.userService()
+        return this.userService
                 .findUserById(userId)
                 .map(user -> Response.succeeded(user, "User found"))
                 .map(ResponseEntity::ok)
@@ -89,8 +99,8 @@ record UserController(UserService userService) {
 
     // ACTIONS
     @PostMapping("/login")
-    ResponseEntity<Response<User>> login(@RequestBody Login request) {
-        return this.userService()
+    ResponseEntity<Response<User>> login(@Valid @RequestBody Login request) {
+        return this.userService
                 .findUserByUsernameAndPassword(request.username(), request.password())
                 .map(user -> Response.succeeded(user, "User found"))
                 .map(ResponseEntity::ok)
@@ -98,7 +108,7 @@ record UserController(UserService userService) {
     }
 
     @PatchMapping("/{userId}/change-role")
-    ResponseEntity<Response<Void>> changeUserRoleByUserId(@PathVariable Long userId, @RequestBody ChangeUserRole request) {
+    ResponseEntity<Response<Void>> changeUserRoleByUserId(@PathVariable Long userId, @Valid @RequestBody ChangeUserRole request) {
         boolean succeeded = this.userService
                 .changeUserRoleByUsernameAndUserId(userId, request.role(), request.username());
         if (succeeded) {
@@ -108,7 +118,7 @@ record UserController(UserService userService) {
     }
 
     @PatchMapping("/{userId}/change-password")
-    ResponseEntity<Response<Void>> changeUserPassword(@PathVariable Long userId, @RequestBody ChangeUserPassword request) {
+    ResponseEntity<Response<Void>> changeUserPassword(@PathVariable Long userId,  @Valid @RequestBody ChangeUserPassword request) {
         boolean succeeded = this.userService
                 .changeUserPassword(userId, request.username(), request.password());
         if (succeeded) {
