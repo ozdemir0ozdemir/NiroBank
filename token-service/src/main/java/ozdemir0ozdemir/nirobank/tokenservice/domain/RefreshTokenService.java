@@ -24,7 +24,6 @@ public class RefreshTokenService {
     private final JwtService jwtService;
     private final PageRequest mediumSizeFirstPage = PageRequest.of(0, 15);
 
-    @Transactional
     public AccessToken generateTokenFor(String username, Role role) {
 
         // Revoke old acceptable refresh tokens
