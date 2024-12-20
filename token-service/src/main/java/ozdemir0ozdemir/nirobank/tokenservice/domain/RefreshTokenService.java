@@ -12,6 +12,7 @@ import ozdemir0ozdemir.nirobank.tokenservice.exception.RefreshTokenNotFoundExcep
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class RefreshTokenService {
         page.forEach(entity -> this.revokeRefreshTokenByReferenceId(entity.getReferenceId()));
 
         // Generate new jwt token pair
-        Date now = new Date();
+        Instant now = Instant.now();
 
         String accessTokenString = jwtService.generateJwt(username, role.getPermissions(), now, false);
         String refreshTokenString = jwtService.generateJwt(username, role.getPermissions(), now, true);
@@ -72,9 +73,9 @@ public class RefreshTokenService {
         Claims refreshTokenClaims = jwtService
                 .getClaimsFrom(optionalEntity.get().getRefreshToken());
 
-        Date now = new Date();
+        Instant now = Instant.now();
 
-        if (refreshTokenClaims.getExpiration().before(now)) {
+        if (refreshTokenClaims.getExpiration().toInstant().isBefore(now)) {
             throw new RefreshTokenExpiredException("Refresh token expired. Ref ID: " + refreshTokenReferenceId);
         }
 

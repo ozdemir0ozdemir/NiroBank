@@ -1,7 +1,10 @@
 package ozdemir0ozdemir.nirobank.tokenservice.util;
 
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,11 +15,12 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Clock;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +31,14 @@ import static org.mockito.Mockito.when;
 class JwtServiceTest {
 
     private static JwtService jwtService;
+    private static JwtConfiguration jwtConfiguration;
+
+    private static final ZonedDateTime now = ZonedDateTime.of(
+            2024,1, 1,
+            10, 0, 0, 0,
+            ZoneId.of("UTC")
+    );
+    private static final Clock clock = Clock.fixed(now.toInstant(), now.getZone());
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -35,23 +47,22 @@ class JwtServiceTest {
 
         KeyPair keyPair = generator.generateKeyPair();
 
-        JwtConfiguration configuration = Mockito.mock(JwtConfiguration.class);
-        when(configuration.getPublicKeySpec())
+        jwtConfiguration = Mockito.mock(JwtConfiguration.class);
+        when(jwtConfiguration.getPublicKeySpec())
                 .thenReturn(new X509EncodedKeySpec(keyPair.getPublic().getEncoded()));
-        when(configuration.getPrivateKeySpec())
+        when(jwtConfiguration.getPrivateKeySpec())
                 .thenReturn(new PKCS8EncodedKeySpec(keyPair.getPrivate().getEncoded()));
-        when(configuration.getAudience())
+        when(jwtConfiguration.getAudience())
                 .thenReturn("NiroBank-Api");
-        when(configuration.getIssuer())
+        when(jwtConfiguration.getIssuer())
                 .thenReturn("NiroBank-AuthService");
-        when(configuration.getExpiresAtMillis())
+        when(jwtConfiguration.getExpiresAtMillis())
                 .thenReturn(30 * 60 * 1000L);
 
-        when(configuration.getRefreshExpiresAtMillis())
+        when(jwtConfiguration.getRefreshExpiresAtMillis())
                 .thenReturn(30 * 24 * 60 * 60 * 1000L);
 
-
-        jwtService = new JwtService(configuration);
+        jwtService = new JwtService(jwtConfiguration, clock);
     }
 
 
@@ -59,21 +70,18 @@ class JwtServiceTest {
     void shouldGenerateValidBearerTokenWithCorrectClaims() throws Exception {
 
         String token = jwtService
-                .generateJwtFor("USER", List.of("USER", "ADMIN"));
+                .generateJwt("USER", List.of("USER", "ADMIN"), Instant.now(clock), false);
 
         assertThat(token).isNotNull();
 
         Claims claims = jwtService
                 .getClaimsFrom(token);
 
-        assertThat(claims.getAudience()).isEqualTo("NiroBank-Api");
+        assertThat(claims.getAudience()).containsExactly("NiroBank-Api");
         assertThat(claims.getIssuer()).isEqualTo("NiroBank-AuthService");
 
-        assertThat(claims.getIssuedAt()).isBefore(Instant.now());
-        assertThat(claims.getExpiration())
-                .isAfter(Instant.now())
-                .isAfter(claims.getIssuedAt());
-
+        assertThat(claims.getIssuedAt()).isEqualTo(Instant.now(clock));
+        assertThat(claims.getExpiration()).isEqualTo(Instant.now(clock).plusMillis(jwtConfiguration.getExpiresAtMillis()));
         assertThat(claims.getSubject()).isEqualTo("USER");
 
         Object rawAuthorities = claims.get("authorities");
@@ -87,8 +95,7 @@ class JwtServiceTest {
                 .hasSize(2)
                 .contains("USER", "ADMIN");
 
-        assertThat(claims.getId()).isNotNull();
-
+        assertThat(claims.getId()).isNotNull().startsWith("USER:");
     }
 
     @Test
@@ -97,7 +104,7 @@ class JwtServiceTest {
         String token = jwtService.generateJwt(
                 "USER",
                 List.of("USER", "ADMIN"),
-                new Date(System.currentTimeMillis() - (31 * 60 * 1000)),
+                Instant.now(clock).minusMillis(jwtConfiguration.getExpiresAtMillis() + 1),
                 false);
 
         assertThatThrownBy(() -> jwtService.getClaimsFrom(token))
@@ -118,19 +125,16 @@ class JwtServiceTest {
 
         KeyPair keyPair = generator.generateKeyPair();
 
-        Instant issuedAt = Instant.now();
-        Instant expiredAt = issuedAt.plus(30L, ChronoUnit.MINUTES);
-
         String token = Jwts
                 .builder()
-                .setId(UUID.randomUUID().toString())
-                .setIssuer("NiroBank-AuthService")
-                .setAudience("NiroBank-Api")
-                .setIssuedAt(Date.from(issuedAt))
-                .setExpiration(Date.from(expiredAt))
-                .setSubject("User")
-                .addClaims(Map.of("authorities", List.of("USER")))
-                .signWith(keyPair.getPrivate(), SignatureAlgorithm.RS256)
+                .id(UUID.randomUUID().toString())
+                .issuer("NiroBank-AuthService")
+                .audience().add("NiroBank-Api").and()
+                .issuedAt(Date.from(Instant.now(clock)))
+                .expiration(Date.from(Instant.now(clock).plusMillis(jwtConfiguration.getExpiresAtMillis())))
+                .subject("User")
+                .claim("authorities", List.of("USER"))
+                .signWith(keyPair.getPrivate())
                 .compact();
 
         assertThatThrownBy(() -> jwtService.getClaimsFrom(token))
@@ -179,7 +183,7 @@ class JwtServiceTest {
                 .generateJwt(
                         "USER",
                         List.of("USER", "ADMIN"),
-                        new Date(System.currentTimeMillis() - (31 * 60 * 1000)),
+                        Instant.now(clock).minusMillis(jwtConfiguration.getExpiresAtMillis() + 1),
                         false);
 
         assertThat(jwtService.isJwtExpired(token))

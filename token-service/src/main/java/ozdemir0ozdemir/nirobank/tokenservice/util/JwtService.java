@@ -3,7 +3,6 @@ package ozdemir0ozdemir.nirobank.tokenservice.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ozdemir0ozdemir.nirobank.tokenservice.config.JwtConfiguration;
@@ -14,7 +13,11 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public final class JwtService {
@@ -23,9 +26,9 @@ public final class JwtService {
     private final JwtConfiguration configuration;
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
+    private final Clock clock;
 
-
-    JwtService(@NonNull JwtConfiguration configuration) throws
+    public JwtService(@NonNull JwtConfiguration configuration, Clock clock) throws
             NoSuchAlgorithmException,
             InvalidKeySpecException {
 
@@ -36,24 +39,28 @@ public final class JwtService {
         KeySpec publicSpec = configuration.getPublicKeySpec();
         privateKey = keyFactory.generatePrivate(privateSpec);
         publicKey = keyFactory.generatePublic(publicSpec);
+        this.clock = clock;
     }
 
     public Claims getClaimsFrom(@NonNull final String token) {
+
         return Jwts
-                .parserBuilder()
-                .setSigningKey(publicKey)
+                .parser()
+                .clock(() -> Date.from(clock.instant()))
+                .verifyWith(publicKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean isJwtExpired(@NonNull final String token) {
         try {
             Jwts
-                    .parserBuilder()
-                    .setSigningKey(publicKey)
+                    .parser()
+                    .clock(() -> Date.from(clock.instant()))
+                    .verifyWith(publicKey)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return false;
         }
         catch (ExpiredJwtException _) {
@@ -64,33 +71,33 @@ public final class JwtService {
     public String generateJwtFor(@NonNull final String username,
                                  @NonNull final List<String> authorities) {
 
-        return generateJwt(username, authorities, new Date(), false);
+        return generateJwt(username, authorities, Instant.now(clock), false);
     }
 
     public String generateRefreshJwtFor(@NonNull final String username,
                                         @NonNull final List<String> authorities) {
-        return generateJwt(username, authorities, new Date(), true);
+        return generateJwt(username, authorities, Instant.now(clock), true);
     }
 
     public String generateJwt(@NonNull final String username,
                        @NonNull final List<String> authorities,
-                       @NonNull final Date issuedAt,
+                       @NonNull final Instant issuedAt,
                        boolean isRefreshToken) {
 
-        long issuedAtTime  = issuedAt.getTime();
+
         long expiresAmount = isRefreshToken ? configuration.getRefreshExpiresAtMillis() : configuration.getExpiresAtMillis();
 
 
         return Jwts
                 .builder()
-                .setId(username + ":" + UUID.randomUUID())
-                .setIssuer(this.configuration.getIssuer())
-                .setAudience(this.configuration.getAudience())
-                .setIssuedAt(issuedAt)
-                .setExpiration(new Date(issuedAtTime + expiresAmount))
-                .setSubject(username)
-                .addClaims(Map.of(USER_AUTHORITIES, authorities))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .id(username + ":" + UUID.randomUUID())
+                .issuer(this.configuration.getIssuer())
+                .audience().add(this.configuration.getAudience()).and()
+                .issuedAt(Date.from(issuedAt))
+                .expiration(Date.from(issuedAt.plusMillis(expiresAmount)))
+                .subject(username)
+                .claim(USER_AUTHORITIES, authorities)
+                .signWith(privateKey)
                 .compact();
     }
 }

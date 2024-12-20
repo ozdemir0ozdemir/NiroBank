@@ -12,11 +12,8 @@ import ozdemir0ozdemir.common.user.Role;
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +50,7 @@ class RefreshTokenServiceUnitTest {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("sub", username);
-        claims.put("exp", expiresAt);
+        claims.put("exp", timestamp);
         claims.put("jti", "tokenId");
 
         when(jwtService.getClaimsFrom(anyString()))
@@ -77,6 +74,6 @@ class RefreshTokenServiceUnitTest {
         assertThat(accessToken.refreshTokenReferenceId()).isEqualTo(entity.getReferenceId());
         assertThat(accessToken.username()).isEqualTo(username);
         assertThat(accessToken.accessToken()).isEqualTo("example-token");
-//        assertThat(accessToken.expiresAt()).isEqualTo(timestamp);
+        assertThat(accessToken.expiresAt()).isEqualTo(timestamp);
     }
 }
