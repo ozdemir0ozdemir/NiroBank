@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import ozdemir0ozdemir.common.user.Role;
+import ozdemir0ozdemir.nirobank.common.user.Role;
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
 import java.sql.Timestamp;

@@ -14,8 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ozdemir0ozdemir.common.response.PagedResponse;
-import ozdemir0ozdemir.common.response.Response;
+import ozdemir0ozdemir.nirobank.common.response.PagedResponse;
+import ozdemir0ozdemir.nirobank.common.response.Response;
 import ozdemir0ozdemir.nirobank.tokenservice.domain.*;
 import ozdemir0ozdemir.nirobank.tokenservice.request.GenerateToken;
 

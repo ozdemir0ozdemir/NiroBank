@@ -1,33 +1,43 @@
-package ozdemir0ozdemir.nirobank.tokenservice.api;
+package ozdemir0ozdemir.nirobank.authservice.api;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ozdemir0ozdemir.nirobank.common.response.Response;
-import ozdemir0ozdemir.nirobank.tokenservice.exception.RefreshTokenExpiredException;
-import ozdemir0ozdemir.nirobank.tokenservice.exception.RefreshTokenNotFoundException;
+import ozdemir0ozdemir.nirobank.authservice.exception.TokenClientException;
+import ozdemir0ozdemir.nirobank.authservice.exception.UserClientException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+@RequiredArgsConstructor
+class GlobalExceptionHandler {
+    private final ObjectMapper mapper;
 
-    @ExceptionHandler(RefreshTokenNotFoundException.class)
-    ResponseEntity<Response<?>> handle(RefreshTokenNotFoundException ex) {
-        Response<?> response = Response.failed(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    @ExceptionHandler(FeignException.class)
+    ResponseEntity<?> handleFeignEx(FeignException ex) throws IOException {
+        if (ex.responseBody().isPresent()) {
+            Response<?> response = mapper.readValue(ex.responseBody().get().array(), new TypeReference<>() {});
+            return ResponseEntity.status(ex.status()).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.failed("Request failed"));
     }
 
-    @ExceptionHandler(RefreshTokenExpiredException.class)
-    ResponseEntity<Response<?>> handle(RefreshTokenExpiredException ex) {
-        Response<?> response = Response.failed(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    @ExceptionHandler({TokenClientException.class, UserClientException.class})
+    ResponseEntity<?> handleClientEx(RuntimeException ex) throws IOException {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.failed(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -58,6 +68,4 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(Response.failed(errors, "Please provide valid parameters"));
     }
-
-
 }

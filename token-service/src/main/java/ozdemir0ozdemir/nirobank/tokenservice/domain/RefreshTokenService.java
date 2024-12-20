@@ -5,15 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ozdemir0ozdemir.common.user.Role;
+import ozdemir0ozdemir.nirobank.common.user.Role;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.RefreshTokenExpiredException;
 import ozdemir0ozdemir.nirobank.tokenservice.exception.RefreshTokenNotFoundException;
 import ozdemir0ozdemir.nirobank.tokenservice.util.JwtService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

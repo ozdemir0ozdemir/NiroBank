@@ -3,6 +3,6 @@ include ':token-service',
         ':token-client',
         ':user-service',
         ':user-client',
-        ':common-module'
-include 'auth-service'
+        ':common-module',
+        ':auth-service'
 

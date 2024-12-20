@@ -1,16 +1,14 @@
-package ozdemir0ozdemir.nirobank.tokenservice.request;
-
+package ozdemir0ozdemir.nirobank.userservice.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import ozdemir0ozdemir.nirobank.common.user.Role;
-import ozdemir0ozdemir.nirobank.common.user.ValidRole;
 
-public record GenerateToken(
+public record RegisterUser(
         @NotBlank(message = "Username cannot be blank or null")
         @Size(min = 4, max = 30, message = "Username length must be in range 4-30")
         String username,
 
-        @ValidRole
-        Role role) {
+        @NotBlank(message = "Password cannot be blank or null")
+        @Size(min = 4, max = 30, message = "Password length must be in range 4-30")
+        String password) {
 }
