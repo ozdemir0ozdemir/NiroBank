@@ -4,5 +4,6 @@ include ':token-service',
         ':user-service',
         ':user-client',
         ':common-module',
-        ':auth-service'
+        ':auth-service',
+        ':account-service'
 

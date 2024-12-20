@@ -11,7 +11,7 @@ import ozdemir0ozdemir.nirobank.client.userclient.request.ChangeUserRole;
 import ozdemir0ozdemir.nirobank.client.userclient.request.Login;
 import ozdemir0ozdemir.nirobank.client.userclient.request.RegisterUser;
 
-@FeignClient(url = "http://" + "${user-service:localhost:8080}" + "/api/v1/users", name = "Users")
+@FeignClient(url = "http://" + "${user-service:localhost:8081}" + "/api/v1/users", name = "Users")
 public interface UserClient {
 
     // CRUD

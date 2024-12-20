@@ -8,7 +8,7 @@ import ozdemir0ozdemir.nirobank.common.response.Response;
 import ozdemir0ozdemir.nirobank.client.tokenclient.request.GenerateToken;
 
 
-@FeignClient(url = "http://"+"${token-service:localhost:8081}"+"/api/v1/tokens", name = "tokens")
+@FeignClient(url = "http://"+"${token-service:localhost:8082}"+"/api/v1/tokens", name = "tokens")
 public interface TokenClient {
 
     @PostMapping
