@@ -2,13 +2,49 @@ version: 3
 
 tasks:
   start-infra:
-    cmd: docker compose -f ./containers/NiroBank.yml up -d
+    cmd: docker compose -f ./containers/NiroBank.yml --profile user --profile token --profile auth up -d
 
   stop-infra:
-    cmd: docker compose -f ./containers/NiroBank.yml down
+    cmd: docker compose -f ./containers/NiroBank.yml --profile user --profile token --profile auth down
+
+  start-user:
+    cmd: docker compose -f ./containers/NiroBank.yml --profile user up -d
+
+  stop-user:
+    cmd: docker compose -f ./containers/NiroBank.yml --profile user down
+
+  start-token:
+    cmd: docker compose -f ./containers/NiroBank.yml --profile token up -d
+
+  stop-token:
+    cmd: docker compose -f ./containers/NiroBank.yml --profile token down
+
+  start-auth:
+    cmd: docker compose -f ./containers/NiroBank.yml --profile auth up -d
+
+  stop-auth:
+    cmd: docker compose -f ./containers/NiroBank.yml --profile auth down
 
   restart-infra:
     cmds:
       - task: stop-infra
       - cmd: timeout 1
       - task: start-infra
+
+  restart-user:
+    cmds:
+      - task: stop-user
+      - cmd: timeout 1
+      - task: start-user
+
+  restart-token:
+    cmds:
+      - task: stop-token
+      - cmd: timeout 1
+      - task: start-token
+
+  restart-auth:
+    cmds:
+      - task: stop-auth
+      - cmd: timeout 1
+      - task: start-auth
