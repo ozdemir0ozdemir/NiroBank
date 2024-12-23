@@ -5,10 +5,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Optional;
 
+@Transactional
 interface RefreshTokenRepository extends PagingAndSortingRepository<RefreshTokenEntity, Long> {
 
     RefreshTokenEntity save(RefreshTokenEntity te);

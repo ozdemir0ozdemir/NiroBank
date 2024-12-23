@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+
     implementation libs.jjwt.getApi()
     runtimeOnly libs.jjwt.getImpl()
     runtimeOnly libs.jjwt.getJackson()

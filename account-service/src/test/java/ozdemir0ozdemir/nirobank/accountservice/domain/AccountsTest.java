@@ -7,6 +7,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import ozdemir0ozdemir.nirobank.accountservice.PostgresContainer;
@@ -96,9 +98,9 @@ class AccountsTest implements PostgresContainer {
 
     @Test
     void should_findFiveAccount_inDb() throws Exception {
-        List<Account> accountList = accounts.findAllAccounts();
+        Page<Account> accountList = accounts.findAllAccounts(0, 10);
 
-        assertThat(accountList.size()).isEqualTo(5);
+        assertThat(accountList.getTotalElements()).isEqualTo(5);
     }
 
     @Test

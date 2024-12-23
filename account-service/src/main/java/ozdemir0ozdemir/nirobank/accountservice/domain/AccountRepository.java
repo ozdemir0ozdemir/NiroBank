@@ -1,5 +1,7 @@
 package ozdemir0ozdemir.nirobank.accountservice.domain;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -7,7 +9,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -24,7 +25,7 @@ interface AccountRepository extends PagingAndSortingRepository<AccountEntity, Lo
 
     @Transactional(readOnly = true)
     @Query("from AccountEntity")
-    List<AccountEntity> findAllAccounts();
+    Page<AccountEntity> findAllAccounts(PageRequest of);
 
 
     @Modifying(clearAutomatically = true)

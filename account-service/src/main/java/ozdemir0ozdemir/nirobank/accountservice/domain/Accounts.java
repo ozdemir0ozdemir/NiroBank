@@ -1,6 +1,8 @@
 package ozdemir0ozdemir.nirobank.accountservice.domain;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ozdemir0ozdemir.nirobank.accountservice.exception.AccountException;
@@ -58,12 +60,10 @@ public class Accounts {
                 .orElseThrow(AccountNotFoundException::new);
     }
 
-    public List<Account> findAllAccounts() {
+    public Page<Account> findAllAccounts(int page, int size) {
         return repository
-                .findAllAccounts()
-                .stream()
-                .map(Account::from)
-                .toList();
+                .findAllAccounts(PageRequest.of(page, size))
+                .map(Account::from);
     }
 
     /**

@@ -11,6 +11,6 @@ public record GenerateToken(
         @Size(min = 4, max = 30, message = "Username length must be in range 4-30")
         String username,
 
-        @ValidRole
+//        @ValidRole
         Role role) {
 }

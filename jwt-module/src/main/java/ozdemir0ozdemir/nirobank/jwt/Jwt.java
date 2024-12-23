@@ -11,6 +11,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Clock;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 public class Jwt {
 
@@ -38,6 +40,22 @@ public class Jwt {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
+    @SuppressWarnings("unchecked")
+    public Token parseToken(String token) {
+        Claims claims = parse(token);
+        return new Token(
+                claims.getId(),
+                claims.getIssuer(),
+                claims.getAudience(),
+                claims.get("iat", Long.class),
+                claims.get("exp", Long.class),
+                claims.getSubject(),
+                (List<String>) claims.get("authorities")
+        );
+    }
+
+
 
     public boolean isExpired(String token) {
         try {

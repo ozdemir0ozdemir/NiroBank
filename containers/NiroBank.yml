@@ -20,6 +20,7 @@ services:
       start_period: 15s
     profiles:
       - "user"
+      - "all"
 
 
   token_service_db:
@@ -41,6 +42,7 @@ services:
       start_period: 15s
     profiles:
       - "token"
+      - "all"
 
   auth_service_db:
     image: postgres:16-alpine
@@ -61,6 +63,28 @@ services:
       start_period: 15s
     profiles:
       - "auth"
+      - "all"
+
+  account_service_db:
+    image: postgres:16-alpine
+    container_name: account_service_db
+    ports:
+      - "45432:5432"
+    environment:
+      - "POSTGRES_USER=account_service_username"
+      - "POSTGRES_PASSWORD=account_service_password"
+      - "POSTGRES_DB=account_service_db"
+      - "PGUSER=account_service_username"
+      - "PGDATABASE=account_service_db"
+    healthcheck:
+      test: "pg_isready -U account_service_username -d account_service_db"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    profiles:
+      - "account"
+      - "all"
 
 
 #  auth-cache:
